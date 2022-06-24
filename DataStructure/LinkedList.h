@@ -13,14 +13,14 @@ struct linkedListNode
     pNode next;
 };
 
-
 struct linkedList 
 {
     pNode head;
-    static PartitionIO* part;
-    linkedList(){ head = initList(); }
 
-    pNode initList();
+    linkedList(){}
+    ~linkedList(){}
+
+    void initList();
     void destoryList();
     void clearList();
     bool isEmpty();
@@ -39,6 +39,17 @@ struct linkedList
     static bool cmp(elemType, elemType);
     static void print(pNode);
 
-    void* _malloc(size_t);
-    void _free(void*);
+    // 自实现内存分配回收时，数据结构结构体需要额外添加的部分
+    static PartitionIO* part;
+
+    static void* _malloc(size_t);
+    static void _free(void*);
+
+    void recovery(signed_size_t); //将原数据结构中所有指针变量加上 offset
+    template<typename T>void addOffset(T& var, signed_size_t offset) {
+        var = (T)((char*)var + offset);
+    }
+
+    void show();
+    void initInput();
 };

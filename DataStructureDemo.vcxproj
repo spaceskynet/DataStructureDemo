@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataStructureDemo.h" />
     <ClInclude Include="DataStructure\LinkedList.h" />
     <ClInclude Include="FileIO.h" />
   </ItemGroup>
@@ -26,6 +27,9 @@
     <ClCompile Include="DataStructure\LinkedList.cpp" />
     <ClCompile Include="FileIO.cpp" />
     <ClCompile Include="DataStructureDemo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

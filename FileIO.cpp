@@ -13,6 +13,7 @@ PartitionIO::PartitionIO()
 {
 	head = new FILE_HEADER;
 	block_info = new BLOCK_LINKED_LIST;
+	dsBlock_info = new DS_STRUCT_POS_LIST;
 	partition = (char *)malloc(BLOCK_TOTAL_SIZE);
 }
 
@@ -20,6 +21,7 @@ PartitionIO::~PartitionIO()
 {
 	delete head;
 	delete block_info;
+	delete dsBlock_info;
 	free(partition);
 }
 
@@ -46,7 +48,7 @@ void PartitionIO::readFile()
 		exit(-1);
 	}
 
-	// Read & Rebuild Block Info Structure
+	// Read & Rebuild `Block Info` Structure
 	int block_len = 0;
 	fread(&block_len, sizeof(int), 1, fp);
 	DS_CLASS type;
@@ -60,6 +62,17 @@ void PartitionIO::readFile()
 		tail = block_info->tailInsert(tail, block_info->newNode(type, pos, size));
 	}
 	assert(block_len == block_info->len);
+
+	// Read & Rebuild `Data Structure Pos Block` Structure
+	fread(&block_len, sizeof(int), 1, fp);
+	fread(&dsBlock_info->prev_part, sizeof(char*), 1, fp);
+	for (int i = 0; i < block_len; ++i)
+	{
+		fread(&type, sizeof(DS_CLASS), 1, fp);
+		fread(&pos, sizeof(unsigned int), 1, fp);
+		dsBlock_info->headInsert(dsBlock_info->newNode(type, pos));
+	}
+	assert(block_len == dsBlock_info->len);
 
 	// Read Partition
 	fread(partition, BLOCK_TOTAL_SIZE, 1, fp);
@@ -77,12 +90,40 @@ void PartitionIO::writeFile()
 	// Write Header
 	fwrite(head, sizeof(FILE_HEADER), 1, fp);
 	
-	// Write Block Info Structure
+	// Write `Block Info` Structure
 	fwrite(&block_info->len, sizeof(int), 1, fp);
 	block_info->traverseList(fp, fwrite);
 
+	// Write `Data Structure Pos Block` Structure
+	fwrite(&dsBlock_info->len, sizeof(int), 1, fp);
+	fwrite(&partition, sizeof(char*), 1, fp);
+	dsBlock_info->traverseList(fp, fwrite);
+
 	// Write Partition
 	fwrite(partition, BLOCK_TOTAL_SIZE, 1, fp);
+}
+
+vector<dsPair> PartitionIO::dsBlockRealAddressList()
+{
+	vector<dsPair> ds_list;
+	if (dsBlock_info->len == 0) return ds_list; // 数据结构的结构体对象在自定义分区中的位置列表为空，说明模拟内存中无数据结构
+	dsBlock p = dsBlock_info->head;
+	while (p->next != nullptr)
+	{
+		p = p->next;
+		ds_list.push_back(make_pair(p->type, calcRealAddress(p->pos)));
+	}
+	return ds_list;
+}
+
+void PartitionIO::dsBlockInsert(DS_CLASS type, unsigned int pos)
+{
+	dsBlock_info->headInsert(dsBlock_info->newNode(type, pos));
+}
+
+void PartitionIO::dsBlockDelete(unsigned int pos)
+{
+	dsBlock_info->del(dsBlock_info->locateElem(pos));
 }
 
 void PartitionIO::clear()
@@ -90,6 +131,7 @@ void PartitionIO::clear()
 	head->setDefault();
 	block_info->clearList();
 	block_info->tailInsert(block_info->head, block_info->newNode(NOT_USED, 0, BLOCK_TOTAL_SIZE / DEFAULT_BLOCK_SIZE));
+	dsBlock_info->clearList();
 	memset(partition, 0, BLOCK_TOTAL_SIZE);
 }
 
@@ -154,6 +196,11 @@ unsigned int PartitionIO::calcPos(void* Pos)
 	return ((char*)Pos - this->partition) / head->block_size;
 }
 
+signed_size_t PartitionIO::calcOffset()
+{
+	return (partition - (char*)dsBlock_info->prev_part);
+}
+
 block PartitionIO::findBlock(unsigned int pos)
 {
 	return this->block_info->locateElem(pos);
@@ -162,6 +209,11 @@ block PartitionIO::findBlock(unsigned int pos)
 void* PartitionIO::calcRealAddress(block elem)
 {
 	return (void*)(this->partition + elem->pos * head->block_size);
+}
+
+void* PartitionIO::calcRealAddress(unsigned int pos)
+{
+	return (void*)(this->partition + pos * head->block_size);
 }
 
 void PartitionIO::mergeBlock(block elem)
@@ -240,7 +292,7 @@ BLOCK_LINKED_LIST::BLOCK_LINKED_LIST()
 BLOCK_LINKED_LIST::~BLOCK_LINKED_LIST()
 {
 	clearList();
-	free(head);
+	delete head;
 }
 
 void BLOCK_LINKED_LIST::clearList()
@@ -270,7 +322,6 @@ void BLOCK_LINKED_LIST::del(int pos)
 	delete p;
 }
 
-
 void BLOCK_LINKED_LIST::del(block elem)
 {
 	block p = elem;
@@ -281,7 +332,6 @@ void BLOCK_LINKED_LIST::del(block elem)
 	--len;
 	delete p;
 }
-
 
 block BLOCK_LINKED_LIST::tailInsert(block tail, block elem)
 {
@@ -295,10 +345,10 @@ block BLOCK_LINKED_LIST::tailInsert(block tail, block elem)
 void BLOCK_LINKED_LIST::traverseList(FILE *fp, size_t(*write)(const void*, size_t, size_t, FILE*))
 {
 	block p = head;
-	while (p->next != NULL)
+	while (p->next != nullptr)
 	{
 		p = p->next;
-		write(&p->type, sizeof(bool), 1, fp);
+		write(&p->type, sizeof(DS_CLASS), 1, fp);
 		write(&p->pos, sizeof(unsigned int), 1, fp);
 		write(&p->size, sizeof(unsigned int), 1, fp);
 	}
@@ -313,7 +363,6 @@ block BLOCK_LINKED_LIST::locateElem(unsigned int pos)
 		if (p->pos == pos) return p;
 	}
 	return nullptr;
-	return block();
 }
 
 void FILE_HEADER::setDefault()
@@ -324,4 +373,96 @@ void FILE_HEADER::setDefault()
 bool BLOCK::is_free()
 {
 	return this->type == NOT_USED;
+}
+
+DS_STRUCT_POS_LIST::DS_STRUCT_POS_LIST()
+{
+	head = newNode(USED, 0);
+	len = 0;
+	prev_part = nullptr;
+}
+
+DS_STRUCT_POS_LIST::~DS_STRUCT_POS_LIST()
+{
+	clearList();
+	delete head;
+}
+
+dsBlock DS_STRUCT_POS_LIST::newNode(DS_CLASS type, unsigned int pos)
+{
+	dsBlock elem = new DS_STRUCT_POS_BLOCK(pos);
+	if (elem == nullptr) exit(-1);
+	elem->type = type;
+	return elem;
+}
+
+void DS_STRUCT_POS_LIST::clearList()
+{
+	while (head->next != nullptr) del(1);
+	assert(len == 0);
+}
+
+void DS_STRUCT_POS_LIST::del(int pos)
+{
+	dsBlock p = head;
+	for (int i = 1; i <= pos && p != nullptr; ++i) p = p->next;
+	if (p == nullptr) return;
+
+	p->prior->next = p->next;
+	if (p->next != nullptr) p->next->prior = p->prior;
+
+	--len;
+	delete p;
+}
+
+void DS_STRUCT_POS_LIST::del(dsBlock elem)
+{
+	dsBlock p = elem;
+
+	p->prior->next = p->next;
+	if (p->next != nullptr) p->next->prior = p->prior;
+
+	--len;
+	delete p;
+}
+
+dsBlock DS_STRUCT_POS_LIST::locateElem(unsigned int pos)
+{
+	dsBlock p = head;
+	for (int i = 1; p->next != nullptr; ++i)
+	{
+		p = p->next;
+		if (p->pos == pos) return p;
+	}
+	return nullptr;
+}
+
+void DS_STRUCT_POS_LIST::insert(int pos, dsBlock elem)
+{
+	if (pos <= 0) return;
+	dsBlock p = head;
+	for (int i = 1; i < pos && p != nullptr; i++) p = p->next;
+	if (p == nullptr) return;
+
+	elem->next = p->next, elem->prior = p;
+	if (p->next != nullptr) p->next->prior = elem;
+	p->next = elem;
+	
+	++len;
+}
+
+void DS_STRUCT_POS_LIST::headInsert(dsBlock elem)
+{
+	insert(1, elem);
+}
+
+void DS_STRUCT_POS_LIST::traverseList(FILE* fp, size_t(*write)(const void*, size_t, size_t, FILE*))
+{
+	dsBlock p = head;
+	while (p->next != nullptr)
+	{
+		p = p->next;
+		write(&p->type, sizeof(DS_CLASS), 1, fp);
+		write(&p->pos, sizeof(unsigned int), 1, fp);
+	}
 }
