@@ -3,6 +3,8 @@
 .vs/
 .vscode/
 x64/
+*.cd
+*.dat
 
 # Prerequisites
 *.d
