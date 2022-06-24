@@ -1,6 +1,7 @@
 # ignore
 
 .vs/
+.vscode/
 x64/
 
 # Prerequisites

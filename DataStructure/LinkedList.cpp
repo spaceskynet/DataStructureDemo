@@ -1,4 +1,13 @@
-//By: SpaceSkyNet
+/**
+ * @file LinkedList.cpp
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief 带头节点的单向链表的实现
+ * @version 0.1
+ * @date 2022-06-24
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "LinkedList.h"
 
 PartitionIO* linkedList::part = nullptr;
@@ -176,7 +185,7 @@ void linkedList::show()
     printf("List data: "), traverseList(print), putchar(0xA);
 }
 
-void linkedList::initInput()
+void linkedList::init()
 {
     int n;
     scanf("%d", &n);

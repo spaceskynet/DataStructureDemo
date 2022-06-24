@@ -1,4 +1,13 @@
-//By: SpaceSkyNet
+/**
+ * @file LinkedList.h
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief 带头节点的单向链表的声明
+ * @version 0.1
+ * @date 2022-06-24
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #pragma once
 #include "../FileIO.h"
 #include <cstdio>
@@ -50,6 +59,6 @@ struct linkedList
         var = (T)((char*)var + offset);
     }
 
+    void init();
     void show();
-    void initInput();
 };

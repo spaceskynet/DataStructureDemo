@@ -1,10 +1,13 @@
-/*********************************************************************
- * \file   FileIO.h
- * \brief  
+/**
+ * @file FileIO.h
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief 对数据文件的读写操作，以及对文件中模拟内存在实际内存中结构的重建
+ * @version 0.1
+ * @date 2022-06-20
  * 
- * \author SpaceSkyNet
- * \date   June 2022
- *********************************************************************/
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #pragma once
 #include <cstdio>
 #include <cstring>
@@ -14,10 +17,10 @@
 #define F_OK 0
 #define DATA_FILE_PATH "./mem.dat"
 #define DATA_FILE_HEADER "BIT\xAC"
-#define DEFAULT_BLOCK_SIZE 4 // 单位为字节
+#define DEFAULT_BLOCK_SIZE 4 // 自定义分区划分的块的默认大小，单位为字节
 #define MEM_ALLOC_ALG FF // 内存分配算法类型选择
 
-const int BLOCK_TOTAL_SIZE = 100 * 1024 * 1024;
+const int BLOCK_TOTAL_SIZE = 100 * 1024 * 1024; // 自定义分区 100 M
 const unsigned int INF = ~0U;
 
 typedef long long int signed_size_t;
@@ -26,28 +29,52 @@ using std::pair;
 using std::make_pair;
 using std::vector;
 
-enum MEMORY_ALLOCATION_ALGORITHM { FF, BF, WF }; // 内存分配算法类型
-enum DS_CLASS { NOT_USED, USED, LINKED_LIST }; //数据结构类型
+/**
+ * @brief 内存分配算法类型
+ * 首次适应、最佳适应、最差适应
+ */
+enum MEMORY_ALLOCATION_ALGORITHM { FF, BF, WF };
 
-typedef pair<DS_CLASS, void*> dsPair;
+/**
+ * @brief 数据结构类型
+ * 存储在分区信息区，同时是分区块是否空闲的标志
+ * (增加新的数据结构需要在这里增加新标志)
+ */
+enum DS_CLASS { NOT_USED, USED, LINKED_LIST };
 
+typedef pair<DS_CLASS, void*> dsPair; // 数据结构类型, 对应类型结构体对象的实际地址
+
+/**
+ * @brief 文件头信息，包括块 ID 和 自定义分区划分的块的大小
+ * 
+ */
 typedef struct FILE_HEADER
 {
-	char header[4];
-	unsigned int block_size;
+	char chunk_id[4]; // 块 ID
+	unsigned int block_size; // 自定义分区划分的块的大小
 	FILE_HEADER() { setDefault(); }
 	void setDefault();
 }*header;
 
+
+/**
+ * @brief 自定义分区的某块的空闲情况
+ * 注意连续的空闲块和非空闲块默认为一个 BLOCK（后面的操作也会维护这个性质）
+ * 这里的 pos 和 size 均是将自定义分区按照 block_size 分块后从 0 开始顺序标号得到的
+ */
 typedef struct BLOCK
 {
 	DS_CLASS type;
-	unsigned int pos, size;
+	unsigned int pos, size;	
 	BLOCK* prior, * next;
 	BLOCK(unsigned int pos, unsigned int size) :type(NOT_USED), pos(pos), size(size), prior(nullptr), next(nullptr) {}
 	bool is_free();
 }* block;
 
+/**
+ * @brief BLOCK 的空闲情况链表（带头结点）
+ * 链表的逻辑顺序与 BLOCK 间的顺序一样（这个性质也被维护）
+ */
 typedef struct BLOCK_LINKED_LIST
 {
 	block head;
@@ -62,9 +89,16 @@ typedef struct BLOCK_LINKED_LIST
 	block tailInsert(block, block);
 	void traverseList(FILE*, size_t(*write)(const void*, size_t, size_t, FILE*));
 	block locateElem(unsigned int);
+	void print(block);
+	void printAll();
 }* list;
 
-// 数据结构的结构体对象在自定义分区中的位置
+/**
+ * @brief 数据结构的结构体对象在自定义分区中的位置
+ * 存储这个的目的是为了还原自定义分区里已经建立好的数据结构在内存中的结构
+ * 如果数据结构建立后，不销毁就写入文件关闭程序，再次运行时会丢失结构体对象的指针（结构体的成员可以靠对象指针来寻址，故存储结构体对象的指针即可）
+ * 也不用实际存储结构体对象的指针，存储结构体对象在自定义分区中块的标号即可
+ */
 typedef struct DS_STRUCT_POS_BLOCK
 {
 	DS_CLASS type;
@@ -73,9 +107,15 @@ typedef struct DS_STRUCT_POS_BLOCK
 	DS_STRUCT_POS_BLOCK(unsigned int pos):type(NOT_USED), pos(pos), prior(nullptr), next(nullptr) {}
 }* dsBlock;
 
+
+/**
+ * @brief 数据结构的结构体对象的标号链表（带头结点）
+ * 自然存储上次程序运行时 partition 在内存中的地址
+ * 便于计算自定义分区首地址相对上次运行的偏移（用于修正数据结构中的指针变量）
+ */
 typedef struct DS_STRUCT_POS_LIST
 {
-	dsBlock head;
+	dsBlock head, tail;
 	int len;
 	char* prev_part; // 上次程序运行时 partition 在内存中的地址
 
@@ -86,13 +126,18 @@ typedef struct DS_STRUCT_POS_LIST
 	void clearList();
 	void del(int);
 	void del(dsBlock);
-	dsBlock locateElem(unsigned int); // 按照在自定义分区中的位置 pos 来定位 dsBlock
+	dsBlock locateElem(unsigned int); // 按照在自定义分区中的标号 pos 来定位 dsBlock
 	void insert(int, dsBlock);
 	void headInsert(dsBlock);
+	void tailInsert(dsBlock);
 	void traverseList(FILE*, size_t(*write)(const void*, size_t, size_t, FILE*));
 
 }* dsList;
 
+/**
+ * @brief 内存分配回收操作类
+ * 完成对内存的分配与回收操作
+ */
 class PartitionIO
 {
 private:
@@ -104,22 +149,33 @@ private:
 public:
 	PartitionIO();
 	~PartitionIO();
+
+	//初始化结构
+	void clear();
+
+	//数据文件的读写操作
 	void readFile();
 	void writeFile();
-	void clear();
-	void mergeBlock(block);
-	void splitBlock(block, unsigned int);
-
+	
 	// 在内存中重建文件模拟内存中的数据结构
 	vector<dsPair> dsBlockRealAddressList();
 	void dsBlockInsert(DS_CLASS, unsigned int);
 	void dsBlockDelete(unsigned int);
 
+	// 分区信息查询相关
+	void printBasicInfo();
+	void printBlockInfo(unsigned int);
+	void printBlockInfoAll();
+
+	// 内存分配回收算法相关
+	void mergeBlock(block);
+	void splitBlock(block, unsigned int);
 	block memAlloc(unsigned int); //内存分配算法选择
 	block firstFit(unsigned int); //首次适应算法
 	block bestFit(unsigned int); //最佳适应算法
 	block worstFit(unsigned int); //最差适应算法
 
+	// 地址、标号获取和计算相关
 	unsigned int getBlockSize();
 	void* calcRealAddress(block);
 	void* calcRealAddress(unsigned int);

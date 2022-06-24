@@ -1,13 +1,32 @@
+/**
+ * @file DataStructureDemo.cpp
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief 各种数据结构的集合的操作类的实现
+ * @version 0.1
+ * @date 2022-06-24
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "DataStructureDemo.h"
 
 int main()
 {
     Collection* c = new Collection;
+    c->printBasicInfo();
     
+    int pos;
+    while (scanf("%d", &pos)) c->printBlockInfo(pos);
+
+    c->printBlockInfoAll();
+    /*
+    c->printBlockInfoAll();
     c->input(LINKED_LIST);
+    c->printBlockInfoAll();
     c->show(LINKED_LIST, 0);
+    c->printBlockInfoAll();
     c->show(LINKED_LIST, 1);
-    c->del(LINKED_LIST, 1);
+    */
 
     delete c;
 	return 0;
@@ -24,14 +43,18 @@ Collection::Collection()
 
 Collection::~Collection()
 {
-//    part->writeFile();
+    part->writeFile();
     delete part;
 }
 
+/**
+ * @brief 在内存中重建文件模拟内存中的数据结构
+ * 
+ */
 void Collection::rebuild()
 {
     auto ds_list = part->dsBlockRealAddressList();
-    if (ds_list.empty()) return;
+    if (ds_list.empty()) return; // 如果为空，说明模拟内存中无数据结构
     signed_size_t offset = part->calcOffset();
     for (auto ds : ds_list)
     {
@@ -41,16 +64,23 @@ void Collection::rebuild()
     }
 }
 
+/**
+ * @brief 对特定的数据结构重建
+ * 
+ * @param type 数据结构类型
+ * @param real_addr 当前数据结构结构体对象在内存中的真实地址
+ * @param offset 总的分配空间首地址相对上次运行的偏移（用于修正数据结构中的指针变量）
+ */
 void Collection::singleRebuild(DS_CLASS type, void* real_addr, signed_size_t offset)
 {
-    switch (type)
+    if (type == LINKED_LIST)
     {
-    case LINKED_LIST:
         linkedList* l = (linkedList*)real_addr;
         linked_list.push_back(l);
         l->recovery(offset);
-        break;
     }
+
+    // more data structure
 }
 
 void Collection::show(DS_CLASS type, int index)
@@ -59,6 +89,8 @@ void Collection::show(DS_CLASS type, int index)
     {
         if(linked_list.size() > index) linked_list[index]->show();
     }
+
+    // more data structure
 }
 
 void Collection::input(DS_CLASS type)
@@ -69,8 +101,10 @@ void Collection::input(DS_CLASS type)
         linked_list.push_back(l);
         part->dsBlockInsert(type, part->calcPos(l));
 
-        l->initInput();
+        l->init();
     }
+
+    // more data structure
 }
 
 void Collection::del(DS_CLASS type, int index)
@@ -84,4 +118,21 @@ void Collection::del(DS_CLASS type, int index)
         newFree(part, linked_list[index]);
         linked_list.erase(linked_list.begin() + index);
     }
+
+    // more data structure
+}
+
+void Collection::printBasicInfo()
+{
+    part->printBasicInfo();
+}
+
+void Collection::printBlockInfo(unsigned int pos)
+{
+    part->printBlockInfo(pos);
+}
+
+void Collection::printBlockInfoAll()
+{
+    part->printBlockInfoAll();
 }
