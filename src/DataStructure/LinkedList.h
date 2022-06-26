@@ -26,7 +26,7 @@ struct linkedList
 {
     pNode head;
 
-    linkedList(){}
+    linkedList() { head = nullptr; }
     ~linkedList(){}
 
     void initList();
@@ -35,12 +35,12 @@ struct linkedList
     bool isEmpty();
     int listLength();
     pNode getElem(int);
-    int locateElem(elemType, bool(*)(elemType, elemType));
+    int locateElem(elemType, bool(*cmp)(elemType, elemType));
     pNode elemPre(pNode);
     pNode elemNext(pNode);
     void insert(int, pNode);
     elemType del(int);
-    void traverseList(void(*)(pNode));
+    void traverseList(void(*visit)(pNode));
     pNode newNode(elemType data);
     void headInsert(pNode);
     pNode tailInsert(pNode, pNode);
@@ -59,6 +59,6 @@ struct linkedList
         var = (T)((char*)var + offset);
     }
 
-    void init();
+    void input();
     void show();
 };

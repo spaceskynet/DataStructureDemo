@@ -1,36 +1,14 @@
 /**
- * @file DataStructureDemo.cpp
+ * @file Collection.cpp
  * @author SpaceSkyNet (spaceskynet@outlook.com)
- * @brief 各种数据结构的集合的操作类的实现
+ * @brief 各种数据结构的集合类的实现
  * @version 0.1
  * @date 2022-06-24
  * 
  * @copyright Copyright (c) 2022
  * 
  */
-#include "DataStructureDemo.h"
-
-int main()
-{
-    Collection* c = new Collection;
-    c->printBasicInfo();
-    
-    int pos;
-    while (scanf("%d", &pos)) c->printBlockInfo(pos);
-
-    c->printBlockInfoAll();
-    /*
-    c->printBlockInfoAll();
-    c->input(LINKED_LIST);
-    c->printBlockInfoAll();
-    c->show(LINKED_LIST, 0);
-    c->printBlockInfoAll();
-    c->show(LINKED_LIST, 1);
-    */
-
-    delete c;
-	return 0;
-}
+#include "Collection.h"
 
 Collection::Collection()
 {
@@ -101,7 +79,7 @@ void Collection::input(DS_CLASS type)
         linked_list.push_back(l);
         part->dsBlockInsert(type, part->calcPos(l));
 
-        l->init();
+        l->input();
     }
 
     // more data structure

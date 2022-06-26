@@ -1,7 +1,7 @@
 /**
- * @file DataStructureDemo.h
+ * @file Collection.h
  * @author SpaceSkyNet (spaceskynet@outlook.com)
- * @brief 各种数据结构的集合的操作类的声明
+ * @brief 各种数据结构的集合类的声明
  * @version 0.1
  * @date 2022-06-24
  * 
@@ -22,6 +22,8 @@ private:
 	PartitionIO* part; // 内存分配回收操作类
 
 	vector<linkedList*> linked_list; // 带头节点的单向链表
+
+
 
 public:
 	Collection();

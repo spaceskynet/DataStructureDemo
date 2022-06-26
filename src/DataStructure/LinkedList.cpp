@@ -185,7 +185,7 @@ void linkedList::show()
     printf("List data: "), traverseList(print), putchar(0xA);
 }
 
-void linkedList::init()
+void linkedList::input()
 {
     int n;
     scanf("%d", &n);
