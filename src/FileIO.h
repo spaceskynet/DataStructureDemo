@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * @file FileIO.h
  * @author SpaceSkyNet (spaceskynet@outlook.com)
- * @brief ¶ÔÊı¾İÎÄ¼şµÄ¶ÁĞ´²Ù×÷£¬ÒÔ¼°¶ÔÎÄ¼şÖĞÄ£ÄâÄÚ´æÔÚÊµ¼ÊÄÚ´æÖĞ½á¹¹µÄÖØ½¨
+ * @brief å¯¹æ•°æ®æ–‡ä»¶çš„è¯»å†™æ“ä½œï¼Œä»¥åŠå¯¹æ–‡ä»¶ä¸­æ¨¡æ‹Ÿå†…å­˜åœ¨å®é™…å†…å­˜ä¸­ç»“æ„çš„é‡å»º
  * @version 0.1
  * @date 2022-06-20
  * 
@@ -17,10 +17,10 @@
 #define F_OK 0
 #define DATA_FILE_PATH "./mem.dat"
 #define DATA_FILE_HEADER "BIT\xAC"
-#define DEFAULT_BLOCK_SIZE 4 // ×Ô¶¨Òå·ÖÇø»®·ÖµÄ¿éµÄÄ¬ÈÏ´óĞ¡£¬µ¥Î»Îª×Ö½Ú
-#define MEM_ALLOC_ALG FF // ÄÚ´æ·ÖÅäËã·¨ÀàĞÍÑ¡Ôñ
+#define DEFAULT_UNIT_SIZE 4 // è‡ªå®šä¹‰åˆ†åŒºåˆ’åˆ†çš„å•å…ƒçš„é»˜è®¤å¤§å°ï¼Œå•ä½ä¸ºå­—èŠ‚
+#define MEM_ALLOC_ALG FF // å†…å­˜åˆ†é…ç®—æ³•ç±»å‹é€‰æ‹©
 
-const int BLOCK_TOTAL_SIZE = 100 * 1024 * 1024; // ×Ô¶¨Òå·ÖÇø 100 M
+const unsigned int PARTITION_TOTAL_SIZE = 100 * 1024 * 1024; // è‡ªå®šä¹‰åˆ†åŒº 100 M
 const unsigned int INF = ~0U;
 
 typedef long long int signed_size_t;
@@ -30,37 +30,37 @@ using std::make_pair;
 using std::vector;
 
 /**
- * @brief ÄÚ´æ·ÖÅäËã·¨ÀàĞÍ
- * Ê×´ÎÊÊÓ¦¡¢×î¼ÑÊÊÓ¦¡¢×î²îÊÊÓ¦
+ * @brief å†…å­˜åˆ†é…ç®—æ³•ç±»å‹
+ * é¦–æ¬¡é€‚åº”ã€æœ€ä½³é€‚åº”ã€æœ€å·®é€‚åº”
  */
 enum MEMORY_ALLOCATION_ALGORITHM { FF, BF, WF };
 
 /**
- * @brief Êı¾İ½á¹¹ÀàĞÍ
- * ´æ´¢ÔÚ·ÖÇøĞÅÏ¢Çø£¬Í¬Ê±ÊÇ·ÖÇø¿éÊÇ·ñ¿ÕÏĞµÄ±êÖ¾
- * (Ôö¼ÓĞÂµÄÊı¾İ½á¹¹ĞèÒªÔÚÕâÀïÔö¼ÓĞÂ±êÖ¾)
+ * @brief æ•°æ®ç»“æ„ç±»å‹
+ * å­˜å‚¨åœ¨åˆ†åŒºä¿¡æ¯åŒºï¼ŒåŒæ—¶æ˜¯åˆ†åŒºå—æ˜¯å¦ç©ºé—²çš„æ ‡å¿—
+ * (å¢åŠ æ–°çš„æ•°æ®ç»“æ„éœ€è¦åœ¨è¿™é‡Œå¢åŠ æ–°æ ‡å¿—)
  */
 enum DS_CLASS { NOT_USED, USED, LINKED_LIST };
 
-typedef pair<DS_CLASS, void*> dsPair; // Êı¾İ½á¹¹ÀàĞÍ, ¶ÔÓ¦ÀàĞÍ½á¹¹Ìå¶ÔÏóµÄÊµ¼ÊµØÖ·
+typedef pair<DS_CLASS, void*> dsPair; // æ•°æ®ç»“æ„ç±»å‹, å¯¹åº”ç±»å‹ç»“æ„ä½“å¯¹è±¡çš„å®é™…åœ°å€
 
 /**
- * @brief ÎÄ¼şÍ·ĞÅÏ¢£¬°üÀ¨¿é ID ºÍ ×Ô¶¨Òå·ÖÇø»®·ÖµÄ¿éµÄ´óĞ¡
+ * @brief æ–‡ä»¶å¤´ä¿¡æ¯ï¼ŒåŒ…æ‹¬å— ID å’Œ è‡ªå®šä¹‰åˆ†åŒºåˆ’åˆ†çš„å—çš„å¤§å°
  * 
  */
 typedef struct FILE_HEADER
 {
-	char chunk_id[4]; // ¿é ID
-	unsigned int block_size; // ×Ô¶¨Òå·ÖÇø»®·ÖµÄ¿éµÄ´óĞ¡
+	char chunk_id[4]; // å— ID
+	unsigned int unit_size; // è‡ªå®šä¹‰åˆ†åŒºåˆ’åˆ†å•å…ƒçš„å¤§å°
 	FILE_HEADER() { setDefault(); }
 	void setDefault();
 }*header;
 
 
 /**
- * @brief ×Ô¶¨Òå·ÖÇøµÄÄ³¿éµÄ¿ÕÏĞÇé¿ö
- * ×¢ÒâÁ¬ĞøµÄ¿ÕÏĞ¿éºÍ·Ç¿ÕÏĞ¿éÄ¬ÈÏÎªÒ»¸ö BLOCK£¨ºóÃæµÄ²Ù×÷Ò²»áÎ¬»¤Õâ¸öĞÔÖÊ£©
- * ÕâÀïµÄ pos ºÍ size ¾ùÊÇ½«×Ô¶¨Òå·ÖÇø°´ÕÕ block_size ·Ö¿éºó´Ó 0 ¿ªÊ¼Ë³Ğò±êºÅµÃµ½µÄ
+ * @brief è‡ªå®šä¹‰åˆ†åŒºçš„æŸå—çš„ç©ºé—²æƒ…å†µ
+ * æ³¨æ„è¿ç»­çš„ç©ºé—²å•å…ƒå’Œéç©ºé—²å•å…ƒé»˜è®¤ä¸ºä¸€ä¸ª BLOCKï¼ˆåé¢çš„æ“ä½œä¹Ÿä¼šç»´æŠ¤è¿™ä¸ªæ€§è´¨ï¼‰
+ * è¿™é‡Œçš„ pos å’Œ size å‡æ˜¯å°†è‡ªå®šä¹‰åˆ†åŒºæŒ‰ç…§ unit_size åˆ†å•å…ƒåä» 0 å¼€å§‹é¡ºåºæ ‡å·å¾—åˆ°çš„
  */
 typedef struct BLOCK
 {
@@ -72,8 +72,8 @@ typedef struct BLOCK
 }* block;
 
 /**
- * @brief BLOCK µÄ¿ÕÏĞÇé¿öÁ´±í£¨´øÍ·½áµã£©
- * Á´±íµÄÂß¼­Ë³ĞòÓë BLOCK ¼äµÄË³ĞòÒ»Ñù£¨Õâ¸öĞÔÖÊÒ²±»Î¬»¤£©
+ * @brief BLOCK çš„ç©ºé—²æƒ…å†µé“¾è¡¨ï¼ˆå¸¦å¤´ç»“ç‚¹ï¼‰
+ * é“¾è¡¨çš„é€»è¾‘é¡ºåºä¸ BLOCK é—´çš„é¡ºåºä¸€æ ·ï¼ˆè¿™ä¸ªæ€§è´¨ä¹Ÿè¢«ç»´æŠ¤ï¼‰
  */
 typedef struct BLOCK_LINKED_LIST
 {
@@ -94,10 +94,10 @@ typedef struct BLOCK_LINKED_LIST
 }* list;
 
 /**
- * @brief Êı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄÎ»ÖÃ
- * ´æ´¢Õâ¸öµÄÄ¿µÄÊÇÎªÁË»¹Ô­×Ô¶¨Òå·ÖÇøÀïÒÑ¾­½¨Á¢ºÃµÄÊı¾İ½á¹¹ÔÚÄÚ´æÖĞµÄ½á¹¹
- * Èç¹ûÊı¾İ½á¹¹½¨Á¢ºó£¬²»Ïú»Ù¾ÍĞ´ÈëÎÄ¼ş¹Ø±Õ³ÌĞò£¬ÔÙ´ÎÔËĞĞÊ±»á¶ªÊ§½á¹¹Ìå¶ÔÏóµÄÖ¸Õë£¨½á¹¹ÌåµÄ³ÉÔ±¿ÉÒÔ¿¿¶ÔÏóÖ¸ÕëÀ´Ñ°Ö·£¬¹Ê´æ´¢½á¹¹Ìå¶ÔÏóµÄÖ¸Õë¼´¿É£©
- * Ò²²»ÓÃÊµ¼Ê´æ´¢½á¹¹Ìå¶ÔÏóµÄÖ¸Õë£¬´æ´¢½á¹¹Ìå¶ÔÏóÔÚ×Ô¶¨Òå·ÖÇøÖĞ¿éµÄ±êºÅ¼´¿É
+ * @brief æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„ä½ç½®
+ * å­˜å‚¨è¿™ä¸ªçš„ç›®çš„æ˜¯ä¸ºäº†è¿˜åŸè‡ªå®šä¹‰åˆ†åŒºé‡Œå·²ç»å»ºç«‹å¥½çš„æ•°æ®ç»“æ„åœ¨å†…å­˜ä¸­çš„ç»“æ„
+ * å¦‚æœæ•°æ®ç»“æ„å»ºç«‹åï¼Œä¸é”€æ¯å°±å†™å…¥æ–‡ä»¶å…³é—­ç¨‹åºï¼Œå†æ¬¡è¿è¡Œæ—¶ä¼šä¸¢å¤±ç»“æ„ä½“å¯¹è±¡çš„æŒ‡é’ˆï¼ˆç»“æ„ä½“çš„æˆå‘˜å¯ä»¥é å¯¹è±¡æŒ‡é’ˆæ¥å¯»å€ï¼Œæ•…å­˜å‚¨ç»“æ„ä½“å¯¹è±¡çš„æŒ‡é’ˆå³å¯ï¼‰
+ * ä¹Ÿä¸ç”¨å®é™…å­˜å‚¨ç»“æ„ä½“å¯¹è±¡çš„æŒ‡é’ˆï¼Œå­˜å‚¨ç»“æ„ä½“å¯¹è±¡åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­å—çš„æ ‡å·å³å¯
  */
 typedef struct DS_STRUCT_POS_BLOCK
 {
@@ -109,15 +109,15 @@ typedef struct DS_STRUCT_POS_BLOCK
 
 
 /**
- * @brief Êı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóµÄ±êºÅÁ´±í£¨´øÍ·½áµã£©
- * ×ÔÈ»´æ´¢ÉÏ´Î³ÌĞòÔËĞĞÊ± partition ÔÚÄÚ´æÖĞµÄµØÖ·
- * ±ãÓÚ¼ÆËã×Ô¶¨Òå·ÖÇøÊ×µØÖ·Ïà¶ÔÉÏ´ÎÔËĞĞµÄÆ«ÒÆ£¨ÓÃÓÚĞŞÕıÊı¾İ½á¹¹ÖĞµÄÖ¸Õë±äÁ¿£©
+ * @brief æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡çš„æ ‡å·é“¾è¡¨ï¼ˆå¸¦å¤´ç»“ç‚¹ï¼‰
+ * è‡ªç„¶å­˜å‚¨ä¸Šæ¬¡ç¨‹åºè¿è¡Œæ—¶ partition åœ¨å†…å­˜ä¸­çš„åœ°å€
+ * ä¾¿äºè®¡ç®—è‡ªå®šä¹‰åˆ†åŒºé¦–åœ°å€ç›¸å¯¹ä¸Šæ¬¡è¿è¡Œçš„åç§»ï¼ˆç”¨äºä¿®æ­£æ•°æ®ç»“æ„ä¸­çš„æŒ‡é’ˆå˜é‡ï¼‰
  */
 typedef struct DS_STRUCT_POS_LIST
 {
 	dsBlock head, tail;
 	int len;
-	char* prev_part; // ÉÏ´Î³ÌĞòÔËĞĞÊ± partition ÔÚÄÚ´æÖĞµÄµØÖ·
+	char* prev_part; // ä¸Šæ¬¡ç¨‹åºè¿è¡Œæ—¶ partition åœ¨å†…å­˜ä¸­çš„åœ°å€
 
 	DS_STRUCT_POS_LIST();
 	~DS_STRUCT_POS_LIST();
@@ -126,7 +126,7 @@ typedef struct DS_STRUCT_POS_LIST
 	void clearList();
 	void del(int);
 	void del(dsBlock);
-	dsBlock locateElem(unsigned int); // °´ÕÕÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄ±êºÅ pos À´¶¨Î» dsBlock
+	dsBlock locateElem(unsigned int); // æŒ‰ç…§åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„æ ‡å· pos æ¥å®šä½ dsBlock
 	void insert(int, dsBlock);
 	void headInsert(dsBlock);
 	void tailInsert(dsBlock);
@@ -135,8 +135,8 @@ typedef struct DS_STRUCT_POS_LIST
 }* dsList;
 
 /**
- * @brief ÄÚ´æ·ÖÅä»ØÊÕ²Ù×÷Àà
- * Íê³É¶ÔÄÚ´æµÄ·ÖÅäÓë»ØÊÕ²Ù×÷
+ * @brief å†…å­˜åˆ†é…å›æ”¶æ“ä½œç±»
+ * å®Œæˆå¯¹å†…å­˜çš„åˆ†é…ä¸å›æ”¶æ“ä½œ
  */
 class PartitionIO
 {
@@ -150,33 +150,34 @@ public:
 	PartitionIO();
 	~PartitionIO();
 
-	//³õÊ¼»¯½á¹¹
+	//åˆå§‹åŒ–ç»“æ„
 	void clear();
 
-	//Êı¾İÎÄ¼şµÄ¶ÁĞ´²Ù×÷
+	//æ•°æ®æ–‡ä»¶çš„è¯»å†™æ“ä½œ
 	void readFile();
 	void writeFile();
 	
-	// ÔÚÄÚ´æÖĞÖØ½¨ÎÄ¼şÄ£ÄâÄÚ´æÖĞµÄÊı¾İ½á¹¹
+	// åœ¨å†…å­˜ä¸­é‡å»ºæ–‡ä»¶æ¨¡æ‹Ÿå†…å­˜ä¸­çš„æ•°æ®ç»“æ„
 	vector<dsPair> dsBlockRealAddressList();
 	void dsBlockInsert(DS_CLASS, unsigned int);
 	void dsBlockDelete(unsigned int);
 
-	// ·ÖÇøĞÅÏ¢²éÑ¯Ïà¹Ø
+	// åˆ†åŒºä¿¡æ¯æŸ¥è¯¢ä¿®æ”¹ç›¸å…³
 	void printBasicInfo();
 	void printBlockInfo(unsigned int);
 	void printBlockInfoAll();
+	void changeUnitSize(unsigned int);
 
-	// ÄÚ´æ·ÖÅä»ØÊÕËã·¨Ïà¹Ø
+	// å†…å­˜åˆ†é…å›æ”¶ç®—æ³•ç›¸å…³
 	void mergeBlock(block);
 	void splitBlock(block, unsigned int);
-	block memAlloc(unsigned int); //ÄÚ´æ·ÖÅäËã·¨Ñ¡Ôñ
-	block firstFit(unsigned int); //Ê×´ÎÊÊÓ¦Ëã·¨
-	block bestFit(unsigned int); //×î¼ÑÊÊÓ¦Ëã·¨
-	block worstFit(unsigned int); //×î²îÊÊÓ¦Ëã·¨
+	block memAlloc(unsigned int); //å†…å­˜åˆ†é…ç®—æ³•é€‰æ‹©
+	block firstFit(unsigned int); //é¦–æ¬¡é€‚åº”ç®—æ³•
+	block bestFit(unsigned int); //æœ€ä½³é€‚åº”ç®—æ³•
+	block worstFit(unsigned int); //æœ€å·®é€‚åº”ç®—æ³•
 
-	// µØÖ·¡¢±êºÅ»ñÈ¡ºÍ¼ÆËãÏà¹Ø
-	unsigned int getBlockSize();
+	// åœ°å€ã€æ ‡å·è·å–å’Œè®¡ç®—ç›¸å…³
+	unsigned int getUnitSize();
 	void* calcRealAddress(block);
 	void* calcRealAddress(unsigned int);
 	unsigned int calcPos(void*);
@@ -184,5 +185,5 @@ public:
 	block findBlock(unsigned int);
 };
 
-void* newMalloc(PartitionIO*, DS_CLASS, size_t); // ×ÔÊµÏÖÄÚ´æ·ÖÅäº¯Êı
-void newFree(PartitionIO*, void*); // ×ÔÊµÏÖÄÚ´æ»ØÊÕº¯Êı 
+void* newMalloc(PartitionIO*, DS_CLASS, size_t); // è‡ªå®ç°å†…å­˜åˆ†é…å‡½æ•°
+void newFree(PartitionIO*, void*); // è‡ªå®ç°å†…å­˜å›æ”¶å‡½æ•° 

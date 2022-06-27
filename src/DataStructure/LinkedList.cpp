@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * @file LinkedList.cpp
  * @author SpaceSkyNet (spaceskynet@outlook.com)
- * @brief ´øÍ·½ÚµãµÄµ¥ÏòÁ´±íµÄÊµÏÖ
+ * @brief å¸¦å¤´èŠ‚ç‚¹çš„å•å‘é“¾è¡¨çš„å®ç°
  * @version 0.1
  * @date 2022-06-24
  * 
@@ -10,7 +10,7 @@
  */
 #include "LinkedList.h"
 
-PartitionIO* linkedList::part = nullptr;
+std::shared_ptr<PartitionIO> linkedList::part = nullptr;
 
 void linkedList::initList()
 {
@@ -127,13 +127,13 @@ void linkedList::print(pNode elem)
 void* linkedList::_malloc(size_t Size)
 {
     if (part == nullptr) return nullptr;
-    return newMalloc(part, LINKED_LIST, Size);
+    return newMalloc(part.get(), LINKED_LIST, Size);
 }
 
 void linkedList::_free(void* Pos)
 {
     if (part == nullptr) return;
-    newFree(part, Pos);
+    newFree(part.get(), Pos);
 }
 
 void linkedList::recovery(signed_size_t offset)

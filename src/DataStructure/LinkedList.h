@@ -1,7 +1,7 @@
-/**
+ï»¿/**
  * @file LinkedList.h
  * @author SpaceSkyNet (spaceskynet@outlook.com)
- * @brief ´øÍ·½ÚµãµÄµ¥ÏòÁ´±íµÄÉùÃ÷
+ * @brief å¸¦å¤´èŠ‚ç‚¹çš„å•å‘é“¾è¡¨çš„å£°æ˜
  * @version 0.1
  * @date 2022-06-24
  * 
@@ -12,6 +12,7 @@
 #include "../FileIO.h"
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 
 typedef int elemType;
 typedef struct linkedListNode Node;
@@ -48,13 +49,13 @@ struct linkedList
     static bool cmp(elemType, elemType);
     static void print(pNode);
 
-    // ×ÔÊµÏÖÄÚ´æ·ÖÅä»ØÊÕÊ±£¬Êı¾İ½á¹¹½á¹¹ÌåĞèÒª¶îÍâÌí¼ÓµÄ²¿·Ö
-    static PartitionIO* part;
+    // è‡ªå®ç°å†…å­˜åˆ†é…å›æ”¶æ—¶ï¼Œæ•°æ®ç»“æ„ç»“æ„ä½“éœ€è¦é¢å¤–æ·»åŠ çš„éƒ¨åˆ†
+    static std::shared_ptr<PartitionIO> part;
 
     static void* _malloc(size_t);
     static void _free(void*);
 
-    void recovery(signed_size_t); //½«Ô­Êı¾İ½á¹¹ÖĞËùÓĞÖ¸Õë±äÁ¿¼ÓÉÏ offset
+    void recovery(signed_size_t); //å°†åŸæ•°æ®ç»“æ„ä¸­æ‰€æœ‰æŒ‡é’ˆå˜é‡åŠ ä¸Š offset
     template<typename T>void addOffset(T& var, signed_size_t offset) {
         var = (T)((char*)var + offset);
     }

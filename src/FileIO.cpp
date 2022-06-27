@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file FileIO.cpp
  * @author SpaceSkyNet (spaceskynet@outlook.com)
  * @brief
@@ -19,7 +19,7 @@ PartitionIO::PartitionIO()
 	head = new FILE_HEADER;
 	block_info = new BLOCK_LINKED_LIST;
 	dsBlock_info = new DS_STRUCT_POS_LIST;
-	partition = (char*)malloc(BLOCK_TOTAL_SIZE);
+	partition = (char*)malloc(PARTITION_TOTAL_SIZE);
 }
 
 PartitionIO::~PartitionIO()
@@ -31,19 +31,19 @@ PartitionIO::~PartitionIO()
 }
 
 /**
- * @brief ´ÓÊı¾İÎÄ¼şÖĞ¶ÁÈ¡·ÖÇøĞÅÏ¢ºÍ×Ô¶¨Òå·ÖÇøµÄÊı¾İ
+ * @brief ä»æ•°æ®æ–‡ä»¶ä¸­è¯»å–åˆ†åŒºä¿¡æ¯å’Œè‡ªå®šä¹‰åˆ†åŒºçš„æ•°æ®
  *
  */
 void PartitionIO::readFile()
 {
-	// Èç¹û²»´æÔÚÊı¾İÎÄ¼ş£¬ËµÃ÷Ê×´ÎÔËĞĞ£¬³õÊ¼»¯½á¹¹
+	// å¦‚æœä¸å­˜åœ¨æ•°æ®æ–‡ä»¶ï¼Œè¯´æ˜é¦–æ¬¡è¿è¡Œï¼Œåˆå§‹åŒ–ç»“æ„
 	if (_access(DATA_FILE_PATH, F_OK))
 	{
 		clear();
 		return;
 	}
 
-	// ·ñÔò´ÓÊı¾İÎÄ¼şÖĞ¶ÁÈ¡
+	// å¦åˆ™ä»æ•°æ®æ–‡ä»¶ä¸­è¯»å–
 	FILE* fp = fopen(DATA_FILE_PATH, "rb");
 	if (fp == nullptr)
 	{
@@ -51,7 +51,7 @@ void PartitionIO::readFile()
 		exit(-1);
 	}
 
-	// ¶ÁÈ¡ Header ºÍ block_size
+	// è¯»å– Header å’Œ block_size
 	fread(head, sizeof(FILE_HEADER), 1, fp);
 	if (!strcmp(head->chunk_id, DATA_FILE_HEADER))
 	{
@@ -59,7 +59,7 @@ void PartitionIO::readFile()
 		exit(-1);
 	}
 
-	// ¶ÁÈ¡²¢ÖØ½¨ BLOCK µÄ¿ÕÏĞÇé¿öÁ´±íµÄ½á¹¹
+	// è¯»å–å¹¶é‡å»º BLOCK çš„ç©ºé—²æƒ…å†µé“¾è¡¨çš„ç»“æ„
 	int block_len = 0;
 	fread(&block_len, sizeof(int), 1, fp);
 	DS_CLASS type;
@@ -74,7 +74,7 @@ void PartitionIO::readFile()
 	}
 	assert(block_len == block_info->len);
 
-	// ¶ÁÈ¡²¢ÖØ½¨ Êı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóµÄ±êºÅÁ´±í µÄ½á¹¹
+	// è¯»å–å¹¶é‡å»º æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡çš„æ ‡å·é“¾è¡¨ çš„ç»“æ„
 	fread(&block_len, sizeof(int), 1, fp);
 	fread(&dsBlock_info->prev_part, sizeof(char*), 1, fp);
 	for (int i = 0; i < block_len; ++i)
@@ -85,8 +85,8 @@ void PartitionIO::readFile()
 	}
 	assert(block_len == dsBlock_info->len);
 
-	// ¶ÁÈ¡×Ô¶¨Òå·ÖÇøµÄÊı¾İ
-	fread(partition, BLOCK_TOTAL_SIZE, 1, fp);
+	// è¯»å–è‡ªå®šä¹‰åˆ†åŒºçš„æ•°æ®
+	fread(partition, PARTITION_TOTAL_SIZE, 1, fp);
 }
 
 void PartitionIO::writeFile()
@@ -98,31 +98,31 @@ void PartitionIO::writeFile()
 		exit(-1);
 	}
 
-	// Ğ´Èë Header ºÍ block_size
+	// å†™å…¥ Header å’Œ block_size
 	fwrite(head, sizeof(FILE_HEADER), 1, fp);
 
-	// Ğ´Èë BLOCK µÄ¿ÕÏĞÇé¿öÁ´±íµÄ½á¹¹
+	// å†™å…¥ BLOCK çš„ç©ºé—²æƒ…å†µé“¾è¡¨çš„ç»“æ„
 	fwrite(&block_info->len, sizeof(int), 1, fp);
 	block_info->traverseList(fp, fwrite);
 
-	// Ğ´Èë Êı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóµÄ±êºÅÁ´±í µÄ½á¹¹
+	// å†™å…¥ æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡çš„æ ‡å·é“¾è¡¨ çš„ç»“æ„
 	fwrite(&dsBlock_info->len, sizeof(int), 1, fp);
 	fwrite(&partition, sizeof(char*), 1, fp);
 	dsBlock_info->traverseList(fp, fwrite);
 
-	// Ğ´Èë×Ô¶¨Òå·ÖÇøµÄÊı¾İ
-	fwrite(partition, BLOCK_TOTAL_SIZE, 1, fp);
+	// å†™å…¥è‡ªå®šä¹‰åˆ†åŒºçš„æ•°æ®
+	fwrite(partition, PARTITION_TOTAL_SIZE, 1, fp);
 }
 
 /**
- * @brief ½«Êı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóµÄ±êºÅÁ´±í ×ª»¯Îª vector<Êı¾İ½á¹¹ÀàĞÍ, ¶ÔÓ¦ÀàĞÍ½á¹¹Ìå¶ÔÏóµÄÊµ¼ÊµØÖ·>£¬±ãÓÚÖØ½¨Êı¾İ½á¹¹
+ * @brief å°†æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡çš„æ ‡å·é“¾è¡¨ è½¬åŒ–ä¸º vector<æ•°æ®ç»“æ„ç±»å‹, å¯¹åº”ç±»å‹ç»“æ„ä½“å¯¹è±¡çš„å®é™…åœ°å€>ï¼Œä¾¿äºé‡å»ºæ•°æ®ç»“æ„
  *
  * @return vector<dsPair>
  */
 vector<dsPair> PartitionIO::dsBlockRealAddressList()
 {
 	vector<dsPair> ds_list;
-	if (dsBlock_info->len == 0) return ds_list; // Êı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄÎ»ÖÃÁĞ±íÎª¿Õ£¬ËµÃ÷Ä£ÄâÄÚ´æÖĞÎŞÊı¾İ½á¹¹
+	if (dsBlock_info->len == 0) return ds_list; // æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„ä½ç½®åˆ—è¡¨ä¸ºç©ºï¼Œè¯´æ˜æ¨¡æ‹Ÿå†…å­˜ä¸­æ— æ•°æ®ç»“æ„
 	dsBlock p = dsBlock_info->head;
 	while (p->next != nullptr)
 	{
@@ -133,10 +133,10 @@ vector<dsPair> PartitionIO::dsBlockRealAddressList()
 }
 
 /**
- * @brief ½«ĞÂ½¨Á¢µÄÊı¾İ½á¹¹½á¹¹Ìå¶ÔÏó²åÈëÊı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóµÄ±êºÅÁ´±í
+ * @brief å°†æ–°å»ºç«‹çš„æ•°æ®ç»“æ„ç»“æ„ä½“å¯¹è±¡æ’å…¥æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡çš„æ ‡å·é“¾è¡¨
  *
- * @param type Êı¾İ½á¹¹ÀàĞÍ
- * @param pos Êı¾İ½á¹¹½á¹¹Ìå¶ÔÏóÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄ±êºÅ
+ * @param type æ•°æ®ç»“æ„ç±»å‹
+ * @param pos æ•°æ®ç»“æ„ç»“æ„ä½“å¯¹è±¡åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„æ ‡å·
  */
 void PartitionIO::dsBlockInsert(DS_CLASS type, unsigned int pos)
 {
@@ -144,9 +144,9 @@ void PartitionIO::dsBlockInsert(DS_CLASS type, unsigned int pos)
 }
 
 /**
- * @brief Ïú»ÙÊı¾İ½á¹¹½á¹¹Ìå¶ÔÏóÊ±£¬´ÓÊı¾İ½á¹¹µÄ½á¹¹Ìå¶ÔÏóµÄ±êºÅÁ´±íÖĞÉ¾³ı
+ * @brief é”€æ¯æ•°æ®ç»“æ„ç»“æ„ä½“å¯¹è±¡æ—¶ï¼Œä»æ•°æ®ç»“æ„çš„ç»“æ„ä½“å¯¹è±¡çš„æ ‡å·é“¾è¡¨ä¸­åˆ é™¤
  *
- * @param pos Êı¾İ½á¹¹½á¹¹Ìå¶ÔÏóÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄ±êºÅ
+ * @param pos æ•°æ®ç»“æ„ç»“æ„ä½“å¯¹è±¡åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„æ ‡å·
  */
 void PartitionIO::dsBlockDelete(unsigned int pos)
 {
@@ -155,8 +155,8 @@ void PartitionIO::dsBlockDelete(unsigned int pos)
 
 void PartitionIO::printBasicInfo()
 {
-	printf("Block size: %d byte\n", head->block_size);
-	printf("Number of blocks: %d\n", BLOCK_TOTAL_SIZE / head->block_size);
+	printf("Block size: %d byte\n", head->unit_size);
+	printf("Number of blocks: %d\n", PARTITION_TOTAL_SIZE / head->unit_size);
 }
 
 void PartitionIO::printBlockInfo(unsigned int pos)
@@ -171,24 +171,31 @@ void PartitionIO::printBlockInfoAll()
 	block_info->printAll();
 }
 
+void PartitionIO::changeUnitSize(unsigned int new_size)
+{
+	if (new_size <= 0 || new_size > PARTITION_TOTAL_SIZE) return;
+	head->unit_size = new_size;
+	this->clear();
+}
+
 /**
- * @brief ³õÊ¼»¯·ÖÇøĞÅÏ¢
- * ÔÚÃ»ÓĞÊı¾İÎÄ¼ş»òÕß¸Ä±äÁË block_size Ê±µ÷ÓÃ
+ * @brief åˆå§‹åŒ–åˆ†åŒºä¿¡æ¯
+ * åœ¨æ²¡æœ‰æ•°æ®æ–‡ä»¶æˆ–è€…æ”¹å˜äº† block_size æ—¶è°ƒç”¨
  */
 void PartitionIO::clear()
 {
 	head->setDefault();
 	block_info->clearList();
-	block_info->tailInsert(block_info->head, block_info->newNode(NOT_USED, 0, BLOCK_TOTAL_SIZE / DEFAULT_BLOCK_SIZE));
+	block_info->tailInsert(block_info->head, block_info->newNode(NOT_USED, 0, PARTITION_TOTAL_SIZE / DEFAULT_UNIT_SIZE));
 	dsBlock_info->clearList();
-	memset(partition, 0, BLOCK_TOTAL_SIZE);
+	memset(partition, 0, PARTITION_TOTAL_SIZE);
 }
 
 /**
- * @brief Ñ¡ÔñÄÚ´æ·ÖÅäËã·¨
+ * @brief é€‰æ‹©å†…å­˜åˆ†é…ç®—æ³•
  *
- * @param size ĞèÒªµÄÁ¬Ğø¿é´óĞ¡
- * @return block Âú×ãÒªÇóµÄ BLOCK µÄÖ¸Õë
+ * @param size éœ€è¦çš„è¿ç»­å—å¤§å°
+ * @return block æ»¡è¶³è¦æ±‚çš„ BLOCK çš„æŒ‡é’ˆ
  */
 block PartitionIO::memAlloc(unsigned int size)
 {
@@ -202,7 +209,7 @@ block PartitionIO::memAlloc(unsigned int size)
 }
 
 /**
- * @brief Ê×´ÎÊÊÓ¦Ëã·¨ (FirstFit)
+ * @brief é¦–æ¬¡é€‚åº”ç®—æ³• (FirstFit)
  *
  * @param size
  * @return block
@@ -212,11 +219,11 @@ block PartitionIO::firstFit(unsigned int size)
 	block p = block_info->head->next;
 	while (p != nullptr && !(p->size >= size && p->is_free())) p = p->next;
 
-	return p; // Èç¹û p Îª nullptr£¬ÔòËµÃ÷Ã»ÕÒµ½£¬·µ»Ø nullptr£»ÈôÕÒµ½£¬p ¼´ÎªËùÕÒ£¬Ôò·µ»Ø p. ¿ÉºÏ²¢
+	return p; // å¦‚æœ p ä¸º nullptrï¼Œåˆ™è¯´æ˜æ²¡æ‰¾åˆ°ï¼Œè¿”å› nullptrï¼›è‹¥æ‰¾åˆ°ï¼Œp å³ä¸ºæ‰€æ‰¾ï¼Œåˆ™è¿”å› p. å¯åˆå¹¶
 }
 
 /**
- * @brief ×î¼ÑÊÊÓ¦Ëã·¨ (BestFit)
+ * @brief æœ€ä½³é€‚åº”ç®—æ³• (BestFit)
  *
  * @param size
  * @return block
@@ -234,11 +241,11 @@ block PartitionIO::bestFit(unsigned int size)
 		p = p->next;
 	}
 
-	return best; // Í¬Àí¿ÉºÏ²¢
+	return best; // åŒç†å¯åˆå¹¶
 }
 
 /**
- * @brief ×î²îÊÊÓ¦Ëã·¨ (WorstFit)
+ * @brief æœ€å·®é€‚åº”ç®—æ³• (WorstFit)
  *
  * @param size
  * @return block
@@ -256,27 +263,27 @@ block PartitionIO::worstFit(unsigned int size)
 		p = p->next;
 	}
 
-	return worst; // Í¬Àí¿ÉºÏ²¢
+	return worst; // åŒç†å¯åˆå¹¶
 }
 
-unsigned int PartitionIO::getBlockSize()
+unsigned int PartitionIO::getUnitSize()
 {
-	return this->head->block_size;
+	return this->head->unit_size;
 }
 
 /**
- * @brief ¸ù¾İÊµ¼ÊµØÖ·¼ÆËãÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄ±êºÅ
+ * @brief æ ¹æ®å®é™…åœ°å€è®¡ç®—åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„æ ‡å·
  *
  * @param Pos
  * @return unsigned int
  */
 unsigned int PartitionIO::calcPos(void* Pos)
 {
-	return ((char*)Pos - this->partition) / head->block_size;
+	return ((char*)Pos - this->partition) / head->unit_size;
 }
 
 /**
- * @brief ×Ô¶¨Òå·ÖÇøÊ×µØÖ·Ïà¶ÔÉÏ´ÎÔËĞĞµÄÆ«ÒÆ£¨ÓÃÓÚĞŞÕıÊı¾İ½á¹¹ÖĞµÄÖ¸Õë±äÁ¿£©
+ * @brief è‡ªå®šä¹‰åˆ†åŒºé¦–åœ°å€ç›¸å¯¹ä¸Šæ¬¡è¿è¡Œçš„åç§»ï¼ˆç”¨äºä¿®æ­£æ•°æ®ç»“æ„ä¸­çš„æŒ‡é’ˆå˜é‡ï¼‰
  * new - old
  * @return signed_size_t
  */
@@ -286,8 +293,8 @@ signed_size_t PartitionIO::calcOffset()
 }
 
 /**
- * @brief ¸ù¾İÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄ±êºÅÎ¨Ò»È·¶¨ BLOCK
- * Ò»¸ö¿é²»¿ÉÄÜ±»¶à¸ö BLOCK °üº¬
+ * @brief æ ¹æ®åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„æ ‡å·å”¯ä¸€ç¡®å®š BLOCK
+ * ä¸€ä¸ªå—ä¸å¯èƒ½è¢«å¤šä¸ª BLOCK åŒ…å«
  * @param pos
  * @return block
  */
@@ -297,23 +304,23 @@ block PartitionIO::findBlock(unsigned int pos)
 }
 
 /**
- * @brief Í¨¹ıÔÚ×Ô¶¨Òå·ÖÇøÖĞµÄ±êºÅ¼ÆËãÊµ¼ÊµØÖ·
+ * @brief é€šè¿‡åœ¨è‡ªå®šä¹‰åˆ†åŒºä¸­çš„æ ‡å·è®¡ç®—å®é™…åœ°å€
  *
  * @param elem
  * @return void*
  */
 void* PartitionIO::calcRealAddress(block elem)
 {
-	return (void*)(this->partition + elem->pos * head->block_size);
+	return (void*)(this->partition + elem->pos * head->unit_size);
 }
 void* PartitionIO::calcRealAddress(unsigned int pos)
 {
-	return (void*)(this->partition + pos * head->block_size);
+	return (void*)(this->partition + pos * head->unit_size);
 }
 
 /**
- * @brief »ØÊÕ¿Õ¼äÊ±ºÏ²¢ BLOCK£¬ÏòÇ°ºóÁ½¸ö·½ÏòËÑË÷
- * µ±»ØÊÕ¿Õ¼äÊ±£¬¿ÉÄÜµ¼ÖÂÔ­±¾²»ÏàÁÚµÄ¿ÕÏĞ BLOCK Í¨¹ıÕâ¸ö»ØÊÕµÄ¿ÕÏĞ BLOCK ÏàÁÚ£¬¹ÊĞèÒªºÏ²¢²Ù×÷Î¬»¤ĞÔÖÊ
+ * @brief å›æ”¶ç©ºé—´æ—¶åˆå¹¶ BLOCKï¼Œå‘å‰åä¸¤ä¸ªæ–¹å‘æœç´¢
+ * å½“å›æ”¶ç©ºé—´æ—¶ï¼Œå¯èƒ½å¯¼è‡´åŸæœ¬ä¸ç›¸é‚»çš„ç©ºé—² BLOCK é€šè¿‡è¿™ä¸ªå›æ”¶çš„ç©ºé—² BLOCK ç›¸é‚»ï¼Œæ•…éœ€è¦åˆå¹¶æ“ä½œç»´æŠ¤æ€§è´¨
  * @param elem
  */
 void PartitionIO::mergeBlock(block elem)
@@ -321,7 +328,7 @@ void PartitionIO::mergeBlock(block elem)
 	assert(elem != block_info->head);
 
 	block p = elem->prior, tmp = nullptr;
-	unsigned int increment = 0, new_pos = elem->pos; // ¿ÕÏĞ¿Õ¼äÔöÁ¿
+	unsigned int increment = 0, new_pos = elem->pos; // ç©ºé—²ç©ºé—´å¢é‡
 	while (p->is_free())
 	{
 		increment += p->size, new_pos = p->pos;
@@ -342,7 +349,7 @@ void PartitionIO::mergeBlock(block elem)
 }
 
 /**
- * @brief ·ÖÅä¿Õ¼äÊ±£¬·ÖÁÑ BLOCK£¬µÃµ½»ùÓÚ block_size µÄ×îĞ¡Âú×ãÌõ¼şµÄ¿éºÍÊ£Óà²¿·Ö
+ * @brief åˆ†é…ç©ºé—´æ—¶ï¼Œåˆ†è£‚ BLOCKï¼Œå¾—åˆ°åŸºäº block_size çš„æœ€å°æ»¡è¶³æ¡ä»¶çš„å—å’Œå‰©ä½™éƒ¨åˆ†
  *
  * @param elem
  * @param size
@@ -360,7 +367,7 @@ void PartitionIO::splitBlock(block elem, unsigned int size)
 }
 
 /**
- * @brief ×ÔÊµÏÖÄÚ´æ·ÖÅäº¯Êı
+ * @brief è‡ªå®ç°å†…å­˜åˆ†é…å‡½æ•°
  *
  * @param part
  * @param type
@@ -369,11 +376,11 @@ void PartitionIO::splitBlock(block elem, unsigned int size)
  */
 void* newMalloc(PartitionIO* part, DS_CLASS type, size_t Size)
 {
-	unsigned int block_size = part->getBlockSize();
+	unsigned int block_size = part->getUnitSize();
 	unsigned int size = (Size + block_size - 1) / block_size;
 	block elem = part->memAlloc(size);
 
-	if (elem == nullptr) return nullptr; // ²»´æÔÚ·ûºÏ´óĞ¡µÄÁ¬Ğø¿ÉÓÃ¿ÕÏĞ¿Õ¼ä
+	if (elem == nullptr) return nullptr; // ä¸å­˜åœ¨ç¬¦åˆå¤§å°çš„è¿ç»­å¯ç”¨ç©ºé—²ç©ºé—´
 
 	assert(elem->size >= size);
 	if (elem->size > size) part->splitBlock(elem, size);
@@ -383,7 +390,7 @@ void* newMalloc(PartitionIO* part, DS_CLASS type, size_t Size)
 }
 
 /**
- * @brief ×ÔÊµÏÖÄÚ´æ»ØÊÕº¯Êı
+ * @brief è‡ªå®ç°å†…å­˜å›æ”¶å‡½æ•°
  *
  * @param part
  * @param Pos
@@ -405,7 +412,7 @@ void newFree(PartitionIO* part, void* Pos)
 
 BLOCK_LINKED_LIST::BLOCK_LINKED_LIST()
 {
-	head = newNode(USED, 0, 0); // Í·Ö¸Õë is_free ÉèÖÃÎª·Ç¿Õ£¬ÔÚºÏ²¢¿éÊ±£¬ÏòÇ°ËÑË÷µÚÒ»¸ö·Ç¿Õ¿éÊ±¿É¼õÉÙÅĞ¶Ï
+	head = newNode(USED, 0, 0); // å¤´æŒ‡é’ˆ is_free è®¾ç½®ä¸ºéç©ºï¼Œåœ¨åˆå¹¶å—æ—¶ï¼Œå‘å‰æœç´¢ç¬¬ä¸€ä¸ªéç©ºå—æ—¶å¯å‡å°‘åˆ¤æ–­
 	len = 0;
 }
 
@@ -506,7 +513,7 @@ void BLOCK_LINKED_LIST::printAll()
 
 void FILE_HEADER::setDefault()
 {
-	block_size = DEFAULT_BLOCK_SIZE, strncpy(chunk_id, DATA_FILE_HEADER, sizeof(chunk_id));
+	unit_size = DEFAULT_UNIT_SIZE, strncpy(chunk_id, DATA_FILE_HEADER, sizeof(chunk_id));
 }
 
 bool BLOCK::is_free()
