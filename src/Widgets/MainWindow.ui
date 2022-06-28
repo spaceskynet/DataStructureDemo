@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">Data Structure Demo</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QClickedLabel" name="logoLabel">
+      <property name="text">
+       <string notr="true">&lt;html&gt;&lt;head&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; }
+hr { height: 1px; border-width: 0; }
+span {font-family:'monospace'; font-size:10pt; color:#000000;}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+&lt;p&gt;&lt;span&gt;    ____        __           _____ __                  __                     ____                     &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span&gt;   / __ \____ _/ /_____ _   / ___// /________  _______/ /___  __________     / __ \___  ____ ___  ____ &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span&gt;  / / / / __ `/ __/ __ `/   \__ \/ __/ ___/ / / / ___/ __/ / / / ___/ _ \   / / / / _ \/ __ `__ \/ __ \&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span&gt; / /_/ / /_/ / /_/ /_/ /   ___/ / /_/ /  / /_/ / /__/ /_/ /_/ / /  /  __/  / /_/ /  __/ / / / / / /_/ /&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span&gt;/_____/\__,_/\__/\__,_/   /____/\__/_/   \__,_/\___/\__/\__,_/_/   \___/  /_____/\___/_/ /_/ /_/\____/ &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="margin">
+       <number>5</number>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QWidget" name="leftWidget" native="true"/>
+    </item>
+    <item row="0" column="2">
+     <widget class="QWidget" name="rightWidget" native="true"/>
+    </item>
+    <item row="1" column="0" colspan="3">
+     <layout class="QHBoxLayout" name="mainHorizontalLayout" stretch="1,3">
+      <item>
+       <layout class="QVBoxLayout" name="partitionInfoVerticalLayout">
+        <item>
+         <widget class="QGroupBox" name="basicInfoGroupBox">
+          <property name="title">
+           <string notr="true">分区基本信息</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QFormLayout" name="unitSizeFormLayout">
+             <item row="0" column="0">
+              <widget class="QClickedLabel" name="unitSizeLabel">
+               <property name="toolTip">
+                <string notr="true">unit size</string>
+               </property>
+               <property name="statusTip">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string notr="true">单元大小（字节）：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="unitSizeSpinBox">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>104857600</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="unitSumFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="unitSumLabel">
+               <property name="text">
+                <string notr="true">单元总数：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="unitSumSpinBox">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>104857600</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="freeUnitSumFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="freeUnitSumLabel">
+               <property name="text">
+                <string notr="true">空闲单位总数：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="freeUnitSumSpinBox">
+               <property name="maximum">
+                <number>104857600</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="memoryAllocationAlgorithmFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="memoryAllocationAlgorithmLabel">
+               <property name="text">
+                <string>内存分配算法：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="memoryAllocationAlgorithmComboBox">
+               <item>
+                <property name="text">
+                 <string>首次适应算法</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>最佳适应算法</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>最差适应算法</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="blockFreeInfoGroupBox">
+          <property name="title">
+           <string notr="true">分区空闲情况</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QListWidget" name="blockFreeInfoListWidget"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="operateVerticalLayout">
+        <item>
+         <widget class="QGroupBox" name="dataStructureOperateGroupBox">
+          <property name="title">
+           <string notr="true">数据结构操作区</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QTabWidget" name="dataStructureOperateTabWidget">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="linkedListPage">
+              <attribute name="title">
+               <string notr="true">链表</string>
+              </attribute>
+              <layout class="QFormLayout" name="formLayout_2">
+               <item row="0" column="0">
+                <widget class="QWidget" name="linkedListInfoWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_3">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="linkedListInfoGridLayout">
+                    <item row="0" column="0">
+                     <layout class="QFormLayout" name="linkedListCountFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="linkedListCountLabel">
+                        <property name="text">
+                         <string notr="true">当前对象的个数：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="linkedListCountSpinBox">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="prefix">
+                         <string notr="true"/>
+                        </property>
+                        <property name="minimum">
+                         <number>-1</number>
+                        </property>
+                        <property name="value">
+                         <number>-1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="linkedListCreateObjectPushButton">
+                      <property name="text">
+                       <string notr="true">新建对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="linkedListOptionWidget" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_2">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="linkedListOptionGridLayout">
+                    <item row="0" column="5">
+                     <widget class="QPushButton" name="linkedListDefaultShowObjectPushButton">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string notr="true">默认展示</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="2" colspan="2">
+                     <widget class="QPushButton" name="linkedListLocateElemPushButton">
+                      <property name="text">
+                       <string notr="true">按值寻找元素</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1" colspan="2">
+                     <widget class="QPushButton" name="linkedListLengthPushButton">
+                      <property name="text">
+                       <string notr="true">链表长度</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="3" colspan="2">
+                     <widget class="QPushButton" name="linkedListDestoryObjectPushButton">
+                      <property name="text">
+                       <string notr="true">销毁对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0" colspan="2">
+                     <widget class="QPushButton" name="linkedListGetElemPushButton">
+                      <property name="text">
+                       <string notr="true">按位序获取元素</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="4" colspan="2">
+                     <widget class="QPushButton" name="linkedListPrintAllElemPushButton">
+                      <property name="text">
+                       <string notr="true">打印所有元素</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="5">
+                     <widget class="QPushButton" name="linkedListDeletePushButton">
+                      <property name="text">
+                       <string notr="true">删除元素</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QPushButton" name="linkedListClearListPushButton">
+                      <property name="text">
+                       <string notr="true">清空链表</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0" colspan="3">
+                     <layout class="QFormLayout" name="linkedListIndexFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="linkedListIndexLabel">
+                        <property name="text">
+                         <string notr="true">将要操作对象的索引：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="linkedListIndexSpinBox"/>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="1" column="3" colspan="2">
+                     <widget class="QPushButton" name="linkedListInsertPushButton">
+                      <property name="text">
+                       <string notr="true">插入元素</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="arrayPage">
+              <attribute name="title">
+               <string notr="true">数组</string>
+              </attribute>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="outputInfoGroupBox">
+          <property name="title">
+           <string notr="true">输出信息</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QTextEdit" name="outputInfoTextEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QClickedLabel</class>
+   <extends>QLabel</extends>
+   <header>newWidgets.hpp</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>unitSizeSpinBox</tabstop>
+  <tabstop>unitSumSpinBox</tabstop>
+  <tabstop>freeUnitSumSpinBox</tabstop>
+  <tabstop>blockFreeInfoListWidget</tabstop>
+  <tabstop>outputInfoTextEdit</tabstop>
+  <tabstop>linkedListCountSpinBox</tabstop>
+  <tabstop>linkedListIndexSpinBox</tabstop>
+  <tabstop>linkedListCreateObjectPushButton</tabstop>
+  <tabstop>linkedListDestoryObjectPushButton</tabstop>
+  <tabstop>linkedListDefaultShowObjectPushButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

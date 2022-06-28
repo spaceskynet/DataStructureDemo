@@ -10,16 +10,20 @@
  */
 #include "LinkedList.h"
 
-std::shared_ptr<PartitionIO> linkedList::part = nullptr;
+PartitionIO* linkedList::part = nullptr;
 
 void linkedList::initList()
 {
     head = newNode(-1);
+    if(head != nullptr) _printf("链表初始化完成\n");
 }
 pNode linkedList::newNode(elemType data)
 {
     pNode elem = (pNode)_malloc(sizeof(Node));
-    if(elem == nullptr) exit(-1);
+    if (elem == nullptr) {
+        _printf("无法获取申请空间的指针，新建结点失败!\n");
+        return nullptr;
+    }
     elem->data = data, elem->next = nullptr;
     return elem;
 }
@@ -27,13 +31,17 @@ void linkedList::destoryList()
 {
     clearList();
     _free(head);
+    _printf("链表已销毁\n");
 }
 void linkedList::clearList()
 {
     while(head->next != nullptr) del(1);
+    _printf("链表已清空\n");
 }
 bool linkedList::isEmpty()
 {
+    bool is_empty = head->next == nullptr;
+    _printf("当前链表%s空\n", is_empty ? "为" : "非");
     return head->next == nullptr;
 }
 int linkedList::listLength()
@@ -41,48 +49,85 @@ int linkedList::listLength()
     pNode p = head;
     int cnt = 0;
     while(p->next != nullptr) ++cnt, p = p->next;
+    _printf("链表长度为 %d.\n", cnt);
     return cnt;
 }
 pNode linkedList::getElem(int pos)
 {
     pNode p = head;
     for(int i = 1; i <= pos && p != nullptr; i++) p = p->next;
+
+    if (p != nullptr)
+    {
+        _printf("位序为 %d 的元素是 %d.\n", pos, p->data);
+        elemPre(p), elemNext(p);
+    }
+    else
+        _printf("位序 %d 非法!\n", pos);
+
     return p;
+}
+int linkedList::locateElem(elemType val)
+{
+    return locateElem(val, cmp);
 }
 int linkedList::locateElem(elemType val, bool(*cmp)(elemType, elemType))
 {
     pNode p = head;
+    int valPos = -1;
     for(int i = 1; p->next != nullptr; i++)
     {
         p = p->next;
-        if(cmp(p->data, val)) return i;
+        if (cmp(p->data, val)) {
+            valPos = i;
+            break;
+        }
     }
-    return -1;
+    if (~valPos)
+        _printf("第一个值为 %d 的元素的位序为 %d.\n", val, valPos);
+    else
+        _printf("在链表中不存在值为 %d 的元素!\n", val);
+
+    return valPos;
 }
 pNode linkedList::elemPre(pNode elem)
 {
-    pNode p = head;
+    pNode p = head, pre = nullptr;
     while(p != nullptr && p->next != elem) p = p->next;
-    if(p == nullptr || p == head) return nullptr;
-    else return p;
+    if(p != nullptr && p != head) pre = p;
+
+    if (pre != nullptr) _printf("前驱为 %d.\n", pre->data);
+    return pre;
 }
 pNode linkedList::elemNext(pNode elem)
 {
-    pNode p = head;
+    pNode p = head, next = nullptr;
     while(p != nullptr && p != elem) p = p->next;
     // p->next == NULL can be merged to `else`
-    if(p == nullptr || p->next == nullptr) return nullptr;
-    else return p->next;    
+    if(p != nullptr && p->next != nullptr) next = p->next;
+    if (next != nullptr) _printf("后继为 %d.\n", next->data);
+    return next;
 }
 void linkedList::insert(int pos, pNode elem)
 {
     pNode p = head;
     for(int i = 1; i < pos && p != nullptr; i++) p = p->next;
-    if(p == nullptr) return;
+    if (p == nullptr)
+    {
+        _printf("位序 %d 非法\n", pos);
+        return;
+    }
 
     elem->next = p->next;
     p->next = elem;
+    _printf("在 %d 处插入了元素 %d.\n", pos, elem->data);
 }
+
+void linkedList::insert(int pos, elemType val)
+{
+    insert(pos, newNode(val));
+}
+
 void linkedList::headInsert(pNode elem)
 {
     insert(1, elem);
@@ -94,7 +139,10 @@ pNode linkedList::tailInsert(pNode tail, pNode elem)
 }
 elemType linkedList::del(int pos)
 {
-    if (pos <= 0) return -1;
+    if (pos <= 0) {
+        _printf("位序 %d 非法!\n", pos);
+        return -1;
+    }
     pNode p = head;
     for(int i = 1; i < pos && p != nullptr; i++) p = p->next;
     if(p == nullptr || p->next == nullptr) return -1;
@@ -103,6 +151,12 @@ elemType linkedList::del(int pos)
 
     elemType data = delNode->data;
     _free(delNode);
+
+    if (~data)
+        _printf("位序为 %d 的元素已删除! 该元素值为 %d.\n", pos, data);
+    else
+        _printf("位序 %d 非法!\n", pos);
+
     return data;
 }
 void linkedList::traverseList(void(*visit)(pNode))
@@ -115,25 +169,41 @@ void linkedList::traverseList(void(*visit)(pNode))
     }
 }
 
+void linkedList::printAllElem()
+{
+    _printf("链表的所有元素: "), traverseList(print), _printf("\n");
+}
+
 bool linkedList::cmp(elemType data, elemType val)
 {
     return data == val;
 }
 void linkedList::print(pNode elem)
 {   
-    printf("%d ", elem->data);
+    _printf("%d ", elem->data);
 }
 
 void* linkedList::_malloc(size_t Size)
 {
     if (part == nullptr) return nullptr;
-    return newMalloc(part.get(), LINKED_LIST, Size);
+    return newMalloc(part, LINKED_LIST, Size);
 }
 
 void linkedList::_free(void* Pos)
 {
     if (part == nullptr) return;
-    newFree(part.get(), Pos);
+    newFree(part, Pos);
+}
+
+int linkedList::_printf(const char* format, ...)
+{
+    va_list aptr;
+    int ret;
+
+    va_start(aptr, format);
+    ret = qprintf(part, format, aptr);
+    va_end(aptr);
+    return ret;
 }
 
 void linkedList::recovery(signed_size_t offset)
@@ -147,58 +217,32 @@ void linkedList::recovery(signed_size_t offset)
     }
 }
 
-void linkedList::show()
+void linkedList::defaultShow()
 {
-    printf("List is init!\nList is %sempty!\n", isEmpty() ? "" : "not ");
-    printf("List length is %d.\n", listLength());
-    printf("List data: "), traverseList(print), putchar(0xA);
+    _printf("\n输出默认展示项\n");
+    isEmpty();
+    listLength();
+    printAllElem();
 
-    int pos = 1;
-
-    pNode elem = getElem(pos);
-    if (elem != NULL)
-    {
-        printf("Pos %d is %d.\n", pos, elem->data);
-        pNode pre = elemPre(elem), next = elemNext(elem);
-        if (pre != NULL) printf("Pre is %d.\n", pre->data);
-        if (next != NULL) printf("Next is %d.\n", next->data);
-    }
-    else
-        printf("Pos %d is illegal!\n", pos);
-
+    int pos = 4;
+    getElem(pos);
     int val = 3;
-
-    int valPos = locateElem(val, cmp);
-    if (~valPos)
-        printf("The first elem whose val is %d is in Pos %d.\n", val, valPos);
-    else
-        printf("No such val %d in the list!\n", val);
-
-    elemType data = del(pos);
-    if (~data)
-        printf("Pos %d is deleted! The value is %d.\n", pos, data);
-    else
-        printf("Pos %d is illegal!\n", pos);
-
-    printf("Now list is %sempty!\n", isEmpty() ? "" : "not ");
-    printf("List length is %d.\n", listLength());
-    printf("List data: "), traverseList(print), putchar(0xA);
+    locateElem(val, cmp);
+    
 }
 
-void linkedList::input()
+void linkedList::defaultInput()
 {
-    int n;
-    scanf("%d", &n);
+    _printf("\n加载默认测试数据\n");
+    int n = 5;
     initList();
     pNode tail = head;
-    printf("List is init!\nList is %sempty!\n", isEmpty() ? "" : "not ");
+    isEmpty();
     for (int i = 1; i <= n; i++)
     {
-        elemType x;
-        scanf("%d", &x);
+        elemType x = i;
         tail = tailInsert(tail, newNode(x));
     }
-    printf("All input is accepted!\nNow list is %sempty!\n", isEmpty() ? "" : "not ");
-    printf("List length is %d.\n", listLength());
-    printf("List data: "), traverseList(print), putchar(0xA);
+    listLength();
+    printAllElem();
 }

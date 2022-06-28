@@ -9,10 +9,11 @@
  * 
  */
 #include "utils.h"
+#include <QDebug>
 
 Collection::Collection()
 {
-    part = std::make_shared<PartitionIO>();
+    part = new PartitionIO;
 
     linkedList::part = part;
     part->readFile();
@@ -22,6 +23,7 @@ Collection::Collection()
 Collection::~Collection()
 {
     part->writeFile();
+    delete part;
 }
 
 /**
@@ -32,6 +34,7 @@ void Collection::rebuild()
 {
     auto ds_list = part->dsBlockRealAddressList();
     if (ds_list.empty()) return; // 如果为空，说明模拟内存中无数据结构
+    qDebug("从模拟内存中检测到数据结构对象，正在重建\n");
     signed_size_t offset = part->calcOffset();
     for (auto ds : ds_list)
     {
@@ -39,6 +42,7 @@ void Collection::rebuild()
         void * real_addr = ds.second;
         singleRebuild(type, real_addr, offset);
     }
+    qDebug("重建数据结构对象完毕\n", linked_list.size());
 }
 
 /**
@@ -52,6 +56,7 @@ void Collection::singleRebuild(DS_CLASS type, void* real_addr, signed_size_t off
 {
     if (type == LINKED_LIST)
     {
+        qDebug("正在重建索引为 %d 的链表对象\n", linked_list.size());
         linkedList* l = (linkedList*)real_addr;
         linked_list.push_back(l);
         l->recovery(offset);
@@ -64,21 +69,23 @@ void Collection::show(DS_CLASS type, int index)
 {
     if (type == LINKED_LIST)
     {
-        if(linked_list.size() > index) linked_list[index]->show();
+        if(linked_list.size() > index) linked_list[index]->defaultShow();
     }
 
     // more data structure
 }
 
-void Collection::input(DS_CLASS type)
+void Collection::init(DS_CLASS type, bool use_default)
 {
     if(type == LINKED_LIST)
     {
-        linkedList* l = (linkedList*)newMalloc(part.get(), type, sizeof(linkedList));
+        _qprintf(part, "\n正在创建索引为 %d 的链表对象……\n", linked_list.size());
+        linkedList* l = (linkedList*)newMalloc(part, type, sizeof(linkedList));
         linked_list.push_back(l);
         part->dsBlockInsert(type, part->calcPos(l));
 
-        l->input();
+        if (use_default) l->defaultInput();
+        else l->initList();
     }
 
     // more data structure
@@ -89,14 +96,23 @@ void Collection::del(DS_CLASS type, int index)
     if (type == LINKED_LIST)
     {
         if (linked_list.size() <= index) return;
+        _qprintf(part, "\n正在销毁索引为 %d 的链表对象……\n", index);
+
         linked_list[index]->destoryList();
 
         part->dsBlockDelete(part->calcPos(linked_list[index]));
-        newFree(part.get(), linked_list[index]);
+        newFree(part, linked_list[index]);
         linked_list.erase(linked_list.begin() + index);
     }
 
     // more data structure
+}
+
+void Collection::clearAll()
+{
+    linked_list.clear();
+
+    // more
 }
 
 void Collection::printBasicInfo()

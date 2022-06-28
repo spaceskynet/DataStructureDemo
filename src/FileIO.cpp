@@ -12,7 +12,12 @@
 #include <assert.h>
 #include <io.h>
 
-const char* DS_CLASS_STR[] = { "Free", "Used", "linked list" };
+const char* DS_CLASS_STR[] = { "空闲", "已使用", "链表" };
+const QColor DS_COLORS[] = {
+	QColor(0, 255, 0, 255), // Green
+	QColor(255, 0, 0, 255), // Red
+	QColor(255, 138, 217),
+};
 
 PartitionIO::PartitionIO()
 {
@@ -20,6 +25,7 @@ PartitionIO::PartitionIO()
 	block_info = new BLOCK_LINKED_LIST;
 	dsBlock_info = new DS_STRUCT_POS_LIST;
 	partition = (char*)malloc(PARTITION_TOTAL_SIZE);
+	mainWindow = nullptr;
 }
 
 PartitionIO::~PartitionIO()
@@ -178,15 +184,37 @@ void PartitionIO::changeUnitSize(unsigned int new_size)
 	this->clear();
 }
 
+unsigned int PartitionIO::getFreeUnitSum()
+{
+	block p = block_info->head;
+	unsigned int free_unit_sum = 0;
+	while (p->next != nullptr)
+	{
+		p = p->next;
+		free_unit_sum += p->is_free() ? p->size : 0;
+	}
+	return free_unit_sum;
+}
+
+MEMORY_ALLOCATION_ALGORITHM PartitionIO::getMemoryAllocationAlgorithm()
+{
+	return head->alg;
+}
+
+void PartitionIO::changeMemoryAllocationAlgorithm(MEMORY_ALLOCATION_ALGORITHM alg)
+{
+	head->alg = alg;
+}
+
 /**
  * @brief 初始化分区信息
  * 在没有数据文件或者改变了 block_size 时调用
  */
 void PartitionIO::clear()
 {
-	head->setDefault();
+	head->setDefault(false); // 这里不重置 unit_size 为 default
 	block_info->clearList();
-	block_info->tailInsert(block_info->head, block_info->newNode(NOT_USED, 0, PARTITION_TOTAL_SIZE / DEFAULT_UNIT_SIZE));
+	block_info->tailInsert(block_info->head, block_info->newNode(NOT_USED, 0, PARTITION_TOTAL_SIZE / head->unit_size));
 	dsBlock_info->clearList();
 	memset(partition, 0, PARTITION_TOTAL_SIZE);
 }
@@ -199,12 +227,12 @@ void PartitionIO::clear()
  */
 block PartitionIO::memAlloc(unsigned int size)
 {
-	switch (MEM_ALLOC_ALG)
+	switch (head->alg)
 	{
-	case FF: return firstFit(size);
-	case BF: return bestFit(size);
-	case WF: return worstFit(size);
-	default: return firstFit(size);
+		case FF: return firstFit(size);
+		case BF: return bestFit(size);
+		case WF: return worstFit(size);
+		default: return firstFit(size);
 	}
 }
 
@@ -303,6 +331,39 @@ block PartitionIO::findBlock(unsigned int pos)
 	return this->block_info->locateElem(pos);
 }
 
+void PartitionIO::setMainWindow(Ui::MainWindow* mainWindow)
+{
+	this->mainWindow = mainWindow;
+}
+
+void PartitionIO::updateBlockFreeInfoMainWindow()
+{
+	// 更新空闲单元块列表
+	mainWindow->blockFreeInfoListWidget->clear(); // 先清空
+
+	block p = block_info->head;
+	char addr_range[30];
+	while (p->next != nullptr)
+	{
+		p = p->next;
+		sprintf(addr_range, "%09d - %09d", p->pos, p->pos + p->size - 1);
+		mainWindow->blockFreeInfoListWidget->addItem(newBlock(addr_range, p->type));
+	}
+
+	// 空闲单元总数
+	unsigned int free_unit_sum = this->getFreeUnitSum();
+	mainWindow->freeUnitSumSpinBox->setValue(free_unit_sum);
+}
+
+
+void PartitionIO::sendOutput(char* output)
+{
+	QTextCursor tc = mainWindow->outputInfoTextEdit->textCursor();
+	tc.movePosition(QTextCursor::End);
+	tc.insertText(QString::fromUtf8(output));
+	mainWindow->outputInfoTextEdit->moveCursor(QTextCursor::End);
+}
+
 /**
  * @brief 通过在自定义分区中的标号计算实际地址
  *
@@ -329,7 +390,7 @@ void PartitionIO::mergeBlock(block elem)
 
 	block p = elem->prior, tmp = nullptr;
 	unsigned int increment = 0, new_pos = elem->pos; // 空闲空间增量
-	while (p->is_free())
+	if (p->is_free())
 	{
 		increment += p->size, new_pos = p->pos;
 		p = p->prior;
@@ -337,7 +398,7 @@ void PartitionIO::mergeBlock(block elem)
 	}
 
 	p = elem->next;
-	while (p != nullptr && p->is_free())
+	if (p != nullptr && p->is_free())
 	{
 		increment += p->size;
 		tmp = p, p = p->next;
@@ -380,13 +441,23 @@ void* newMalloc(PartitionIO* part, DS_CLASS type, size_t Size)
 	unsigned int size = (Size + block_size - 1) / block_size;
 	block elem = part->memAlloc(size);
 
-	if (elem == nullptr) return nullptr; // 不存在符合大小的连续可用空闲空间
+	if (elem == nullptr) {
+		_qprintf(part, "空闲空间不足，无法完成分配!\n");
+		return nullptr; // 不存在符合大小的连续可用空闲空间
+	}
 
 	assert(elem->size >= size);
+
 	if (elem->size > size) part->splitBlock(elem, size);
 
 	elem->type = type;
-	return part->calcRealAddress(elem);
+	void* real_addr = part->calcRealAddress(elem);
+
+	part->updateBlockFreeInfoMainWindow();
+
+	_qprintf(part, "%s申请了 %d 字节的空间，使用了 %d 个单元，第一个单元标号为 %d，实际首地址为 %p.\n", DS_CLASS_STR[type], Size, size, elem->pos, real_addr);
+
+	return real_addr;
 }
 
 /**
@@ -403,12 +474,57 @@ void newFree(PartitionIO* part, void* Pos)
 	if (elem == nullptr)
 	{
 		perror("Cannot find the correct block info!");
+		_qprintf(part, "无法找到对应的非空闲块!\n");
 		return;
 	}
 
+	_qprintf(part, "%s释放了 %d 个单元，第一个单元标号为 %d，实际首地址为 %p.\n", DS_CLASS_STR[elem->type], elem->size, pos, Pos);
+
 	part->mergeBlock(elem);
 	elem->type = NOT_USED;
+
+	part->updateBlockFreeInfoMainWindow();
 }
+
+QListWidgetItem* newBlock(char* addr_range, DS_CLASS type)
+{
+	QBrush COLOR(DS_COLORS[type]);
+	COLOR.setStyle(Qt::Dense1Pattern);
+
+	QListWidgetItem* __qlistwidgetitem = new QListWidgetItem();
+	__qlistwidgetitem->setText(QString::fromUtf8(addr_range));
+	if(type == NOT_USED) 
+		__qlistwidgetitem->setToolTip(QString::fromUtf8(DS_CLASS_STR[type]));
+	else
+		__qlistwidgetitem->setToolTip(QString::fromUtf8(DS_CLASS_STR[type]) + QString::fromUtf8("已使用"));
+	__qlistwidgetitem->setTextAlignment(Qt::AlignCenter);
+	__qlistwidgetitem->setBackground(COLOR);
+	return __qlistwidgetitem;
+}
+
+int _qprintf(PartitionIO* part, const char* format, ...)
+{
+	va_list aptr;
+	int ret;
+
+	va_start(aptr, format);
+	ret = qprintf(part, format, aptr);
+	va_end(aptr);
+	return ret;
+}
+
+int qprintf(PartitionIO* part, const char* format, va_list aptr)
+{
+	char* buffer = new char[Q_FRINTF_BUFFER_SIZE];
+	int ret;
+
+	ret = vsprintf(buffer, format, aptr);
+
+	part->sendOutput(buffer);
+	delete[] buffer;
+	return ret;
+}
+
 
 BLOCK_LINKED_LIST::BLOCK_LINKED_LIST()
 {
@@ -511,9 +627,13 @@ void BLOCK_LINKED_LIST::printAll()
 }
 
 
-void FILE_HEADER::setDefault()
+void FILE_HEADER::setDefault(bool is_set_default)
 {
-	unit_size = DEFAULT_UNIT_SIZE, strncpy(chunk_id, DATA_FILE_HEADER, sizeof(chunk_id));
+	if (is_set_default) {
+		unit_size = DEFAULT_UNIT_SIZE;
+		alg = MEM_ALLOC_ALG;
+	}
+	strncpy(chunk_id, DATA_FILE_HEADER, sizeof(chunk_id));
 }
 
 bool BLOCK::is_free()
@@ -547,6 +667,7 @@ void DS_STRUCT_POS_LIST::clearList()
 {
 	while (head->next != nullptr) del(1);
 	assert(len == 0);
+	assert(head == tail);
 }
 
 void DS_STRUCT_POS_LIST::del(int pos)
@@ -568,7 +689,8 @@ void DS_STRUCT_POS_LIST::del(dsBlock elem)
 	dsBlock p = elem;
 
 	p->prior->next = p->next;
-	if (p->next != nullptr) p->next->prior = p->prior;
+	if (p != tail) p->next->prior = p->prior;
+	else tail = p->prior;
 
 	--len;
 	delete p;

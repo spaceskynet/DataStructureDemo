@@ -8,15 +8,35 @@ project (DataStructureDemo
   VERSION 1.0.0
 )
 
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(CMAKE_PREFIX_PATH $ENV{QTDIR})
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Gui)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
+qt_standard_project_setup()
+
 # 将源代码添加到此项目的可执行文件。
 add_executable (DataStructureDemo
 	"src/FileIO.cpp"
 	"src/utils.cpp"
 	"src/DataStructure/LinkedList.cpp"
+	"src/Widgets/newWidgets.hpp"
+	"src/Widgets/ui_MainWindow.h"
+	"src/Widgets/ui_changeUnitSizeDialog.h"
+	"src/Widgets/ui_createObjectDialog.h"
+	"src/Widgets/ui_inputDialog.h"
+	"src/gui.cpp"
 	"src/main.cpp"
  )
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET DataStructureDemo PROPERTY CXX_STANDARD 14)
-endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
+
 

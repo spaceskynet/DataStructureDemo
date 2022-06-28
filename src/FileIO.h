@@ -9,9 +9,11 @@
  * 
  */
 #pragma once
+#include "Widgets/ui_MainWindow.h"
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <cstdarg>
 #include <utility>
 #include <vector>
 #define F_OK 0
@@ -19,6 +21,7 @@
 #define DATA_FILE_HEADER "BIT\xAC"
 #define DEFAULT_UNIT_SIZE 4 // 自定义分区划分的单元的默认大小，单位为字节
 #define MEM_ALLOC_ALG FF // 内存分配算法类型选择
+#define Q_FRINTF_BUFFER_SIZE 1000
 
 const unsigned int PARTITION_TOTAL_SIZE = 100 * 1024 * 1024; // 自定义分区 100 M
 const unsigned int INF = ~0U;
@@ -45,15 +48,16 @@ enum DS_CLASS { NOT_USED, USED, LINKED_LIST };
 typedef pair<DS_CLASS, void*> dsPair; // 数据结构类型, 对应类型结构体对象的实际地址
 
 /**
- * @brief 文件头信息，包括块 ID 和 自定义分区划分的块的大小
+ * @brief 文件头信息，包括块 ID 、 自定义分区划分的块的大小和内存分配算法
  * 
  */
 typedef struct FILE_HEADER
 {
 	char chunk_id[4]; // 块 ID
 	unsigned int unit_size; // 自定义分区划分单元的大小
-	FILE_HEADER() { setDefault(); }
-	void setDefault();
+	MEMORY_ALLOCATION_ALGORITHM alg; // 内存分配算法类型选择
+	FILE_HEADER() { setDefault(true); }
+	void setDefault(bool);
 }*header;
 
 
@@ -91,7 +95,7 @@ typedef struct BLOCK_LINKED_LIST
 	block locateElem(unsigned int);
 	void print(block);
 	void printAll();
-}* list;
+}* plist;
 
 /**
  * @brief 数据结构的结构体对象在自定义分区中的位置
@@ -131,7 +135,6 @@ typedef struct DS_STRUCT_POS_LIST
 	void headInsert(dsBlock);
 	void tailInsert(dsBlock);
 	void traverseList(FILE*, size_t(*write)(const void*, size_t, size_t, FILE*));
-
 }* dsList;
 
 /**
@@ -142,9 +145,10 @@ class PartitionIO
 {
 private:
 	header head;
-	list block_info;
+	plist block_info;
 	dsList dsBlock_info;
 	char* partition;
+	Ui::MainWindow* mainWindow;
 
 public:
 	PartitionIO();
@@ -166,7 +170,12 @@ public:
 	void printBasicInfo();
 	void printBlockInfo(unsigned int);
 	void printBlockInfoAll();
+	unsigned int getUnitSize();
 	void changeUnitSize(unsigned int);
+	unsigned int getFreeUnitSum();
+	MEMORY_ALLOCATION_ALGORITHM getMemoryAllocationAlgorithm();
+	void changeMemoryAllocationAlgorithm(MEMORY_ALLOCATION_ALGORITHM);
+
 
 	// 内存分配回收算法相关
 	void mergeBlock(block);
@@ -177,13 +186,19 @@ public:
 	block worstFit(unsigned int); //最差适应算法
 
 	// 地址、标号获取和计算相关
-	unsigned int getUnitSize();
 	void* calcRealAddress(block);
 	void* calcRealAddress(unsigned int);
 	unsigned int calcPos(void*);
 	signed_size_t calcOffset();
 	block findBlock(unsigned int);
+
+	void setMainWindow(Ui::MainWindow*);
+	void updateBlockFreeInfoMainWindow();
+	void sendOutput(char*);
 };
 
 void* newMalloc(PartitionIO*, DS_CLASS, size_t); // 自实现内存分配函数
-void newFree(PartitionIO*, void*); // 自实现内存回收函数 
+void newFree(PartitionIO*, void*); // 自实现内存回收函数
+QListWidgetItem* newBlock(char*, DS_CLASS);
+int _qprintf(PartitionIO*, const char*, ...);
+int qprintf(PartitionIO*, const char*, va_list);

@@ -24,7 +24,7 @@ using std::string;
 class Collection
 {
 public:
-	std::shared_ptr<PartitionIO> part; // 内存分配回收操作类
+	PartitionIO* part; // 内存分配回收操作类
 
 	vector<linkedList*> linked_list; // 带头节点的单向链表
 
@@ -34,8 +34,10 @@ public:
 	void rebuild(); // 在内存中重建文件模拟内存中的数据结构
 	void singleRebuild(DS_CLASS, void *, signed_size_t); // 对特定的数据结构重建
 	void show(DS_CLASS, int); // 展示特定的数据结构
-	void input(DS_CLASS); // 建立特定的数据结构
+	void init(DS_CLASS, bool); // 建立特定的数据结构
 	void del(DS_CLASS, int); // 删除特定的数据结构
+
+	void clearAll();
 
 	void printBasicInfo();
 	void printBlockInfo(unsigned int);

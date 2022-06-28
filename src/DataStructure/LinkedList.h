@@ -12,7 +12,6 @@
 #include "../FileIO.h"
 #include <cstdio>
 #include <cstdlib>
-#include <memory>
 
 typedef int elemType;
 typedef struct linkedListNode Node;
@@ -36,12 +35,15 @@ struct linkedList
     bool isEmpty();
     int listLength();
     pNode getElem(int);
+    int locateElem(elemType);
     int locateElem(elemType, bool(*cmp)(elemType, elemType));
     pNode elemPre(pNode);
     pNode elemNext(pNode);
     void insert(int, pNode);
+    void insert(int, elemType);
     elemType del(int);
     void traverseList(void(*visit)(pNode));
+    void printAllElem();
     pNode newNode(elemType data);
     void headInsert(pNode);
     pNode tailInsert(pNode, pNode);
@@ -50,16 +52,17 @@ struct linkedList
     static void print(pNode);
 
     // 自实现内存分配回收时，数据结构结构体需要额外添加的部分
-    static std::shared_ptr<PartitionIO> part;
+    static PartitionIO* part;
 
     static void* _malloc(size_t);
     static void _free(void*);
+    static int _printf(const char*, ...);
 
     void recovery(signed_size_t); //将原数据结构中所有指针变量加上 offset
     template<typename T>void addOffset(T& var, signed_size_t offset) {
         var = (T)((char*)var + offset);
     }
 
-    void input();
-    void show();
+    void defaultInput();
+    void defaultShow();
 };
