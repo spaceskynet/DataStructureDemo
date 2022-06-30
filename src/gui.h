@@ -30,9 +30,19 @@ public:
     void setup();
     void update();
 
+    void bindLinkedListButton();
+    void bindArrayButton();
+    void bindStackButton();
+    void bindHeapButton();
+    void bindTreeButton();
+    void bindUndirectionGraphButton();
+    void bindDirectionGraphButton();
+
 public slots:
     void changeUnitSum(int);
     void changeUnitSize();
+    void clearPartition();
+    void locateBlock();
 };
 
 int customWarning(const char*);

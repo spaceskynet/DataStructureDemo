@@ -4,8 +4,11 @@
 .vscode/
 x64/
 out/
+doc/
 *.cd
 *.dat
+*.png
+*.afphoto
 
 # Prerequisites
 *.d

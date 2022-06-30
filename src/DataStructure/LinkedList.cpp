@@ -228,7 +228,6 @@ void linkedList::defaultShow()
     getElem(pos);
     int val = 3;
     locateElem(val, cmp);
-    
 }
 
 void linkedList::defaultInput()
@@ -242,6 +241,7 @@ void linkedList::defaultInput()
     {
         elemType x = i;
         tail = tailInsert(tail, newNode(x));
+        _printf("在链表尾部插入元素 %d.\n", x);
     }
     listLength();
     printAllElem();

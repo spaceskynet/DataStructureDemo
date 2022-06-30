@@ -8,15 +8,34 @@
  * @copyright Copyright (c) 2022
  *
  */
+#define _CRT_SECURE_NO_WARNINGS
 #include "FileIO.h"
 #include <assert.h>
-#include <io.h>
+#include <QFileInfo>
 
-const char* DS_CLASS_STR[] = { "空闲", "已使用", "链表" };
+const char* DS_CLASS_STR[] = { 
+	"空闲", 
+	"已使用", 
+	"链表",
+	"数组",
+	"栈",
+	"堆",
+	"树",
+	"无向图",
+	"有向图",
+	// more
+};
 const QColor DS_COLORS[] = {
 	QColor(0, 255, 0, 255), // Green
 	QColor(255, 0, 0, 255), // Red
-	QColor(255, 138, 217),
+	QColor(255, 138, 217),	// 链表
+	QColor(152, 255, 237),	// 数组
+	QColor(183, 185, 255),	// 栈
+	QColor(220, 255, 108),	// 堆
+	QColor(255, 81, 94), // 树
+	QColor(255, 168, 117),	// 无向图
+	QColor(255, 240, 53),	// 有向图
+	// more					
 };
 
 PartitionIO::PartitionIO()
@@ -43,14 +62,15 @@ PartitionIO::~PartitionIO()
 void PartitionIO::readFile()
 {
 	// 如果不存在数据文件，说明首次运行，初始化结构
-	if (_access(DATA_FILE_PATH, F_OK))
+	QFileInfo fi(DAT_FILE_PATH);
+	if (!fi.isFile())
 	{
 		clear();
 		return;
 	}
 
 	// 否则从数据文件中读取
-	FILE* fp = fopen(DATA_FILE_PATH, "rb");
+	FILE* fp = fopen(DAT_FILE_PATH, "rb");
 	if (fp == nullptr)
 	{
 		perror("Cannot open data file!");
@@ -59,10 +79,16 @@ void PartitionIO::readFile()
 
 	// 读取 Header 和 block_size
 	fread(head, sizeof(FILE_HEADER), 1, fp);
-	if (!strcmp(head->chunk_id, DATA_FILE_HEADER))
+	if (!strcmp(head->magic_number, DAT_MAGIC_NUMBER))
 	{
-		perror("Data file header error!");
+		perror("Dat file magic number error!");
 		exit(-1);
+	}
+	if (head->unit_size <= 0 || head->unit_size > PARTITION_TOTAL_SIZE)
+	{
+		head->unit_size = DEFAULT_UNIT_SIZE;
+		clear();
+		return;
 	}
 
 	// 读取并重建 BLOCK 的空闲情况链表的结构
@@ -97,7 +123,7 @@ void PartitionIO::readFile()
 
 void PartitionIO::writeFile()
 {
-	FILE* fp = fopen(DATA_FILE_PATH, "wb");
+	FILE* fp = fopen(DAT_FILE_PATH, "wb");
 	if (fp == nullptr)
 	{
 		perror("Cannot open data file!");
@@ -170,6 +196,12 @@ void PartitionIO::printBlockInfo(unsigned int pos)
 	block elem = block_info->locateElem(pos);
 	if (elem != nullptr) block_info->print(elem);
 	else printf("Illegal pos!\n");
+}
+
+int PartitionIO::getBlockIndex(unsigned int pos)
+{
+	int index = block_info->locateElemIndex(pos);
+	return index;
 }
 
 void PartitionIO::printBlockInfoAll()
@@ -302,12 +334,12 @@ unsigned int PartitionIO::getUnitSize()
 /**
  * @brief 根据实际地址计算在自定义分区中的标号
  *
- * @param Pos
+ * @param ptr
  * @return unsigned int
  */
-unsigned int PartitionIO::calcPos(void* Pos)
+unsigned int PartitionIO::calcPos(void* ptr)
 {
-	return ((char*)Pos - this->partition) / head->unit_size;
+	return ((char*)ptr - this->partition) / head->unit_size;
 }
 
 /**
@@ -346,7 +378,7 @@ void PartitionIO::updateBlockFreeInfoMainWindow()
 	while (p->next != nullptr)
 	{
 		p = p->next;
-		sprintf(addr_range, "%09d - %09d", p->pos, p->pos + p->size - 1);
+		sprintf(addr_range, "%09d - %09d", p->pos, p->pos + p->size);
 		mainWindow->blockFreeInfoListWidget->addItem(newBlock(addr_range, p->type));
 	}
 
@@ -358,9 +390,14 @@ void PartitionIO::updateBlockFreeInfoMainWindow()
 
 void PartitionIO::sendOutput(char* output)
 {
+	this->sendOutput(QString::fromUtf8(output));
+}
+
+void PartitionIO::sendOutput(QString output)
+{
 	QTextCursor tc = mainWindow->outputInfoTextEdit->textCursor();
 	tc.movePosition(QTextCursor::End);
-	tc.insertText(QString::fromUtf8(output));
+	tc.insertText(output);
 	mainWindow->outputInfoTextEdit->moveCursor(QTextCursor::End);
 }
 
@@ -455,7 +492,7 @@ void* newMalloc(PartitionIO* part, DS_CLASS type, size_t Size)
 
 	part->updateBlockFreeInfoMainWindow();
 
-	_qprintf(part, "%s申请了 %d 字节的空间，使用了 %d 个单元，第一个单元标号为 %d，实际首地址为 %p.\n", DS_CLASS_STR[type], Size, size, elem->pos, real_addr);
+	_qprintf(part, "%s申请了 %d 字节的空间，使用了 %d 个单元，第一个单元标号为 %d，实际首地址为 0x%p.\n", DS_CLASS_STR[type], Size, size, elem->pos, real_addr);
 
 	return real_addr;
 }
@@ -466,9 +503,9 @@ void* newMalloc(PartitionIO* part, DS_CLASS type, size_t Size)
  * @param part
  * @param Pos
  */
-void newFree(PartitionIO* part, void* Pos)
+void newFree(PartitionIO* part, void* ptr)
 {
-	unsigned int pos = part->calcPos(Pos);
+	unsigned int pos = part->calcPos(ptr);
 	block elem = part->findBlock(pos);
 
 	if (elem == nullptr)
@@ -478,7 +515,8 @@ void newFree(PartitionIO* part, void* Pos)
 		return;
 	}
 
-	_qprintf(part, "%s释放了 %d 个单元，第一个单元标号为 %d，实际首地址为 %p.\n", DS_CLASS_STR[elem->type], elem->size, pos, Pos);
+	memset(ptr, 0, 1ll * elem->size * part->getUnitSize());
+	_qprintf(part, "%s释放了 %d 个单元，第一个单元标号为 %d，实际首地址为 0x%p.\n", DS_CLASS_STR[elem->type], elem->size, pos, ptr);
 
 	part->mergeBlock(elem);
 	elem->type = NOT_USED;
@@ -608,6 +646,17 @@ block BLOCK_LINKED_LIST::locateElem(unsigned int pos)
 	return nullptr;
 }
 
+int BLOCK_LINKED_LIST::locateElemIndex(unsigned int pos)
+{
+	block p = head;
+	for (int i = 1; p->next != nullptr; ++i)
+	{
+		p = p->next;
+		if (p->pos <= pos && p->pos + p->size > pos) return i - 1;
+	}
+	return -1;
+}
+
 void BLOCK_LINKED_LIST::print(block elem)
 {
 	printf("%08d - %08d:\t", elem->pos, elem->pos + elem->size);
@@ -633,7 +682,7 @@ void FILE_HEADER::setDefault(bool is_set_default)
 		unit_size = DEFAULT_UNIT_SIZE;
 		alg = MEM_ALLOC_ALG;
 	}
-	strncpy(chunk_id, DATA_FILE_HEADER, sizeof(chunk_id));
+	strncpy(magic_number, DAT_MAGIC_NUMBER, sizeof(magic_number));
 }
 
 bool BLOCK::is_free()

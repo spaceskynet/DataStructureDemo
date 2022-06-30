@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>750</width>
     <height>600</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>750</width>
+    <height>600</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string notr="true">Data Structure Demo</string>
@@ -71,10 +77,13 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
                 <bool>true</bool>
                </property>
                <property name="minimum">
-                <number>1</number>
+                <number>0</number>
                </property>
                <property name="maximum">
                 <number>104857600</number>
+               </property>
+               <property name="singleStep">
+                <number>0</number>
                </property>
               </widget>
              </item>
@@ -127,25 +136,28 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
              <item row="0" column="0">
               <widget class="QLabel" name="memoryAllocationAlgorithmLabel">
                <property name="text">
-                <string>内存分配算法：</string>
+                <string notr="true">内存分配算法：</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
               <widget class="QComboBox" name="memoryAllocationAlgorithmComboBox">
+               <property name="currentText">
+                <string notr="true">首次适应算法</string>
+               </property>
                <item>
                 <property name="text">
-                 <string>首次适应算法</string>
+                 <string notr="true">首次适应算法</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>最佳适应算法</string>
+                 <string notr="true">最佳适应算法</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>最差适应算法</string>
+                 <string notr="true">最差适应算法</string>
                 </property>
                </item>
               </widget>
@@ -157,6 +169,9 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
         </item>
         <item>
          <widget class="QGroupBox" name="blockFreeInfoGroupBox">
+          <property name="toolTip">
+           <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;标号范围左闭右开&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="title">
            <string notr="true">分区空闲情况</string>
           </property>
@@ -237,89 +252,85 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
                   <bool>true</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_2">
-                  <item row="0" column="0">
-                   <layout class="QGridLayout" name="linkedListOptionGridLayout">
-                    <item row="0" column="5">
-                     <widget class="QPushButton" name="linkedListDefaultShowObjectPushButton">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                  <item row="0" column="0" colspan="3">
+                   <layout class="QFormLayout" name="linkedListIndexFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="linkedListIndexLabel">
                       <property name="text">
-                       <string notr="true">默认展示</string>
+                       <string notr="true">将要操作对象的索引：</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="2" colspan="2">
-                     <widget class="QPushButton" name="linkedListLocateElemPushButton">
-                      <property name="text">
-                       <string notr="true">按值寻找元素</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1" colspan="2">
-                     <widget class="QPushButton" name="linkedListLengthPushButton">
-                      <property name="text">
-                       <string notr="true">链表长度</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="3" colspan="2">
-                     <widget class="QPushButton" name="linkedListDestoryObjectPushButton">
-                      <property name="text">
-                       <string notr="true">销毁对象</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0" colspan="2">
-                     <widget class="QPushButton" name="linkedListGetElemPushButton">
-                      <property name="text">
-                       <string notr="true">按位序获取元素</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="4" colspan="2">
-                     <widget class="QPushButton" name="linkedListPrintAllElemPushButton">
-                      <property name="text">
-                       <string notr="true">打印所有元素</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="5">
-                     <widget class="QPushButton" name="linkedListDeletePushButton">
-                      <property name="text">
-                       <string notr="true">删除元素</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QPushButton" name="linkedListClearListPushButton">
-                      <property name="text">
-                       <string notr="true">清空链表</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0" colspan="3">
-                     <layout class="QFormLayout" name="linkedListIndexFormLayout">
-                      <item row="0" column="0">
-                       <widget class="QLabel" name="linkedListIndexLabel">
-                        <property name="text">
-                         <string notr="true">将要操作对象的索引：</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="1">
-                       <widget class="QSpinBox" name="linkedListIndexSpinBox"/>
-                      </item>
-                     </layout>
-                    </item>
-                    <item row="1" column="3" colspan="2">
-                     <widget class="QPushButton" name="linkedListInsertPushButton">
-                      <property name="text">
-                       <string notr="true">插入元素</string>
-                      </property>
-                     </widget>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="linkedListIndexSpinBox"/>
                     </item>
                    </layout>
+                  </item>
+                  <item row="0" column="3" colspan="2">
+                   <widget class="QPushButton" name="linkedListDestoryObjectPushButton">
+                    <property name="text">
+                     <string notr="true">销毁对象</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="5">
+                   <widget class="QPushButton" name="linkedListDefaultShowObjectPushButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string notr="true">默认展示</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="linkedListClearListPushButton">
+                    <property name="text">
+                     <string notr="true">清空链表</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1" colspan="2">
+                   <widget class="QPushButton" name="linkedListLengthPushButton">
+                    <property name="text">
+                     <string notr="true">链表长度</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3" colspan="2">
+                   <widget class="QPushButton" name="linkedListInsertPushButton">
+                    <property name="text">
+                     <string notr="true">插入元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QPushButton" name="linkedListDeletePushButton">
+                    <property name="text">
+                     <string notr="true">删除元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QPushButton" name="linkedListGetElemPushButton">
+                    <property name="text">
+                     <string notr="true">按位序获取元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="2" colspan="2">
+                   <widget class="QPushButton" name="linkedListLocateElemPushButton">
+                    <property name="text">
+                     <string notr="true">按值寻找元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="4" colspan="2">
+                   <widget class="QPushButton" name="linkedListPrintAllElemPushButton">
+                    <property name="text">
+                     <string notr="true">打印所有元素</string>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -330,6 +341,956 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
               <attribute name="title">
                <string notr="true">数组</string>
               </attribute>
+              <layout class="QFormLayout" name="formLayout_4">
+               <item row="0" column="0">
+                <widget class="QWidget" name="arrayInfoWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_9">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="arrayInfoGridLayout">
+                    <item row="0" column="0">
+                     <layout class="QFormLayout" name="arrayCountFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="arrayCountLabel">
+                        <property name="text">
+                         <string notr="true">当前对象的个数：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="arrayCountSpinBox">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="prefix">
+                         <string notr="true"/>
+                        </property>
+                        <property name="minimum">
+                         <number>-1</number>
+                        </property>
+                        <property name="value">
+                         <number>-1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="arrayCreateObjectPushButton">
+                      <property name="text">
+                       <string notr="true">新建对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="arrayOptionWidget" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_8">
+                  <item row="0" column="0" colspan="3">
+                   <layout class="QFormLayout" name="arrayIndexFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="arrayIndexLabel">
+                      <property name="text">
+                       <string notr="true">将要操作对象的索引：</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="arrayIndexSpinBox"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QPushButton" name="arrayGetElemPushButton">
+                    <property name="text">
+                     <string notr="true">按位序获取元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="6">
+                   <widget class="QPushButton" name="arrayInitArrayPushButton">
+                    <property name="text">
+                     <string notr="true">申请空间</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1" colspan="2">
+                   <widget class="QPushButton" name="arrayLengthPushButton">
+                    <property name="text">
+                     <string notr="true">数组长度</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QPushButton" name="arrayDeletePushButton">
+                    <property name="text">
+                     <string notr="true">删除元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3" colspan="2">
+                   <widget class="QPushButton" name="arrayDestoryObjectPushButton">
+                    <property name="text">
+                     <string notr="true">销毁对象</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3" colspan="2">
+                   <widget class="QPushButton" name="arrayInsertPushButton">
+                    <property name="text">
+                     <string notr="true">插入元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="arrayClearPushButton">
+                    <property name="text">
+                     <string notr="true">清空数组</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="2" colspan="2">
+                   <widget class="QPushButton" name="arrayLocateElemPushButton">
+                    <property name="text">
+                     <string notr="true">按值寻找元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="4" colspan="2">
+                   <widget class="QPushButton" name="arrayPrintAllElemPushButton">
+                    <property name="text">
+                     <string notr="true">打印所有元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="5">
+                   <widget class="QPushButton" name="arrayDefaultShowObjectPushButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string notr="true">默认展示</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="6">
+                   <widget class="QPushButton" name="arrayAppendPushButton">
+                    <property name="text">
+                     <string notr="true">在尾部插入元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="stackPage">
+              <attribute name="title">
+               <string notr="true">栈</string>
+              </attribute>
+              <layout class="QFormLayout" name="formLayout_5">
+               <item row="0" column="0">
+                <widget class="QWidget" name="stackInfoWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_10">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="stackInfoGridLayout">
+                    <item row="0" column="0">
+                     <layout class="QFormLayout" name="stackCountFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="stackCountLabel">
+                        <property name="text">
+                         <string notr="true">当前对象的个数：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="stackCountSpinBox">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="prefix">
+                         <string notr="true"/>
+                        </property>
+                        <property name="minimum">
+                         <number>-1</number>
+                        </property>
+                        <property name="value">
+                         <number>-1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="stackCreateObjectPushButton">
+                      <property name="text">
+                       <string notr="true">新建对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="stackOptionWidget" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_11">
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="stackClearPushButton">
+                    <property name="text">
+                     <string notr="true">清空栈</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="3">
+                   <layout class="QFormLayout" name="stackIndexFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="stackIndexLabel">
+                      <property name="text">
+                       <string notr="true">将要操作对象的索引：</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="stackIndexSpinBox"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QPushButton" name="stackGetTopPushButton">
+                    <property name="text">
+                     <string notr="true">获取栈顶元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1" colspan="2">
+                   <widget class="QPushButton" name="stackLengthPushButton">
+                    <property name="text">
+                     <string notr="true">栈长度</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QPushButton" name="stackPopPushButton">
+                    <property name="text">
+                     <string notr="true">弹栈</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3" colspan="2">
+                   <widget class="QPushButton" name="stackDestoryObjectPushButton">
+                    <property name="text">
+                     <string notr="true">销毁对象</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3" colspan="2">
+                   <widget class="QPushButton" name="stackPushPushButton">
+                    <property name="text">
+                     <string notr="true">压栈</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="5">
+                   <widget class="QPushButton" name="stackDefaultShowObjectPushButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string notr="true">默认展示</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="2" colspan="2">
+                   <widget class="QPushButton" name="stackPrintAllElemPushButton">
+                    <property name="text">
+                     <string notr="true">打印所有元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="heapPage">
+              <attribute name="title">
+               <string notr="true">堆</string>
+              </attribute>
+              <layout class="QFormLayout" name="formLayout_6">
+               <item row="0" column="0">
+                <widget class="QWidget" name="heapInfoWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_15">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="heapInfoGridLayout">
+                    <item row="0" column="0">
+                     <layout class="QFormLayout" name="heapCountFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="heapCountLabel">
+                        <property name="text">
+                         <string notr="true">当前对象的个数：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="heapCountSpinBox">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="prefix">
+                         <string notr="true"/>
+                        </property>
+                        <property name="minimum">
+                         <number>-1</number>
+                        </property>
+                        <property name="value">
+                         <number>-1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="heapCreateObjectPushButton">
+                      <property name="text">
+                       <string notr="true">新建对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="heapOptionWidget" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_14">
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QPushButton" name="heapGetTopPushButton">
+                    <property name="text">
+                     <string notr="true">获取堆顶元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="4" colspan="2">
+                   <widget class="QPushButton" name="heapInsertPushButton">
+                    <property name="text">
+                     <string notr="true">插入元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="4" colspan="2">
+                   <widget class="QPushButton" name="heapDestoryObjectPushButton">
+                    <property name="text">
+                     <string notr="true">销毁对象</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="heapClearPushButton">
+                    <property name="text">
+                     <string notr="true">清空堆</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="4">
+                   <layout class="QFormLayout" name="heapIndexFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="heapIndexLabel">
+                      <property name="text">
+                       <string notr="true">将要操作对象的索引：</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="heapIndexSpinBox"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="0" column="6">
+                   <widget class="QPushButton" name="heapDefaultShowObjectPushButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string notr="true">默认展示</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1" colspan="3">
+                   <widget class="QPushButton" name="heapLengthPushButton">
+                    <property name="text">
+                     <string notr="true">堆长度</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="2" colspan="3">
+                   <widget class="QPushButton" name="heapPopPushButton">
+                    <property name="text">
+                     <string notr="true">删除堆顶元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="5" colspan="2">
+                   <widget class="QPushButton" name="heapPrintAllElemPushButton">
+                    <property name="text">
+                     <string notr="true">打印所有元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="treePage">
+              <attribute name="title">
+               <string>树</string>
+              </attribute>
+              <layout class="QFormLayout" name="formLayout_8">
+               <item row="0" column="0">
+                <widget class="QWidget" name="heapInfoWidget_2" native="true">
+                 <layout class="QGridLayout" name="gridLayout_18">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="treeInfoGridLayout">
+                    <item row="0" column="0">
+                     <layout class="QFormLayout" name="treeCountFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="treeCountLabel">
+                        <property name="text">
+                         <string notr="true">当前对象的个数：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="treeCountSpinBox">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="prefix">
+                         <string notr="true"/>
+                        </property>
+                        <property name="minimum">
+                         <number>-1</number>
+                        </property>
+                        <property name="value">
+                         <number>-1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="treeCreateObjectPushButton">
+                      <property name="text">
+                       <string notr="true">新建对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="treeOptionWidget" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_19">
+                  <item row="1" column="4">
+                   <widget class="QPushButton" name="treeNodeCountPushButton">
+                    <property name="text">
+                     <string notr="true">树节点数</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QPushButton" name="treeInsertPushButton">
+                    <property name="text">
+                     <string notr="true">插入元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="4">
+                   <layout class="QFormLayout" name="treeIndexFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="treeIndexLabel">
+                      <property name="text">
+                       <string notr="true">将要操作对象的索引：</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="treeIndexSpinBox"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="1" colspan="3">
+                   <widget class="QPushButton" name="treeHeightPushButton">
+                    <property name="text">
+                     <string notr="true">树高度</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="treeClearPushButton">
+                    <property name="text">
+                     <string notr="true">清空树</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="4">
+                   <widget class="QPushButton" name="treeDestoryObjectPushButton">
+                    <property name="text">
+                     <string notr="true">销毁对象</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1" colspan="3">
+                   <widget class="QPushButton" name="treeDeleteNodePushButton">
+                    <property name="text">
+                     <string notr="true">删除元素</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QPushButton" name="treeMaxDegreePushButton">
+                    <property name="text">
+                     <string notr="true">树最大度</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="5">
+                   <widget class="QPushButton" name="treeGetNodePushButton">
+                    <property name="text">
+                     <string notr="true">按编号输出节点</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="4">
+                   <widget class="QPushButton" name="treePrintPushButton">
+                    <property name="text">
+                     <string notr="true">打印树</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="5">
+                   <widget class="QPushButton" name="treeDefaultShowObjectPushButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string notr="true">默认展示</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="undirectionGraphPage">
+              <attribute name="title">
+               <string notr="true">无向图</string>
+              </attribute>
+              <layout class="QFormLayout" name="formLayout">
+               <item row="0" column="0">
+                <widget class="QWidget" name="undirectionGraphInfoWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_4">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="undirectionGraphInfoGridLayout">
+                    <item row="0" column="0">
+                     <layout class="QFormLayout" name="undirectionGraphCountFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="undirectionGraphCountLabel">
+                        <property name="text">
+                         <string notr="true">当前对象的个数：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="undirectionGraphCountSpinBox">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="prefix">
+                         <string notr="true"/>
+                        </property>
+                        <property name="minimum">
+                         <number>-1</number>
+                        </property>
+                        <property name="value">
+                         <number>-1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="undirectionGraphCreateObjectPushButton">
+                      <property name="text">
+                       <string notr="true">新建对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="undirectionGraphOptionWidget" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="0" column="0" colspan="2">
+                   <layout class="QFormLayout" name="undirectionGraphIndexFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="undirectionGraphIndexLabel">
+                      <property name="text">
+                       <string notr="true">将要操作对象的索引：</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="undirectionGraphIndexSpinBox"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QPushButton" name="undirectionGraphDestoryObjectPushButton">
+                    <property name="text">
+                     <string notr="true">销毁对象</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QPushButton" name="undirectionGraphDefaultShowObjectPushButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string notr="true">默认展示</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="undirectionGraphDisplayInfoPushButton">
+                    <property name="text">
+                     <string notr="true">打印图信息</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QPushButton" name="undirectionGraphreAssignWeightPushButton">
+                    <property name="text">
+                     <string notr="true">更改边权</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QPushButton" name="undirectionGraphAddVertexPushButton">
+                    <property name="text">
+                     <string notr="true">增加顶点数</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QPushButton" name="undirectionGraphAddEdgeDeletePushButton">
+                    <property name="text">
+                     <string notr="true">增加边</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="4">
+                   <widget class="QPushButton" name="undirectionGrapPrimPushButton">
+                    <property name="text">
+                     <string notr="true">Prim</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QPushButton" name="undirectionGraphDFSPushButton">
+                    <property name="text">
+                     <string notr="true">DFS</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="undirectionGraphBFSPushButton">
+                    <property name="text">
+                     <string notr="true">BFS</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="2">
+                   <widget class="QPushButton" name="undirectionGraphDijkstraPushButton">
+                    <property name="text">
+                     <string notr="true">Dijkstra</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
+                   <widget class="QPushButton" name="undirectionGraphFloydPushButton">
+                    <property name="text">
+                     <string notr="true">Floyd</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="4">
+                   <widget class="QPushButton" name="undirectionGrapKruskalPushButton">
+                    <property name="text">
+                     <string notr="true">Kruskal</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="directionGraphPage">
+              <attribute name="title">
+               <string notr="true">有向图</string>
+              </attribute>
+              <layout class="QFormLayout" name="formLayout_3">
+               <item row="0" column="0">
+                <widget class="QWidget" name="directionGraphInfoWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_7">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="directionGraphInfoGridLayout">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <item row="0" column="0">
+                     <layout class="QFormLayout" name="directionGraphCountFormLayout">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="directionGraphCountLabel">
+                        <property name="text">
+                         <string notr="true">当前对象的个数：</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QSpinBox" name="directionGraphCountSpinBox">
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="prefix">
+                         <string notr="true"/>
+                        </property>
+                        <property name="minimum">
+                         <number>-1</number>
+                        </property>
+                        <property name="value">
+                         <number>-1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="directionGraphCreateObjectPushButton">
+                      <property name="text">
+                       <string notr="true">新建对象</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="directionGraphOptionWidget" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_6">
+                  <item row="2" column="2">
+                   <widget class="QPushButton" name="directionGraphDijkstraPushButton">
+                    <property name="text">
+                     <string notr="true">Dijkstra</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QPushButton" name="directionGraphAddEdgeDeletePushButton">
+                    <property name="text">
+                     <string notr="true">增加边</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QPushButton" name="directionGraphDefaultShowObjectPushButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string notr="true">默认展示</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="directionGraphDisplayInfoPushButton">
+                    <property name="text">
+                     <string notr="true">打印图信息</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QPushButton" name="directionGraphreAssignWeightPushButton">
+                    <property name="text">
+                     <string notr="true">更改边权</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="directionGraphBFSPushButton">
+                    <property name="text">
+                     <string notr="true">BFS</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
+                   <widget class="QPushButton" name="directionGraphFloydPushButton">
+                    <property name="text">
+                     <string notr="true">Floyd</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QPushButton" name="directionGraphDestoryObjectPushButton">
+                    <property name="text">
+                     <string notr="true">销毁对象</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QPushButton" name="directionGraphDFSPushButton">
+                    <property name="text">
+                     <string notr="true">DFS</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <layout class="QFormLayout" name="directionGraphIndexFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="directionGraphIndexLabel">
+                      <property name="text">
+                       <string notr="true">将要操作对象的索引：</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="directionGraphIndexSpinBox"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QPushButton" name="directionGraphAddVertexPushButton">
+                    <property name="text">
+                     <string notr="true">增加顶点数</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="4">
+                   <widget class="QPushButton" name="directionGraphTopoSortPushButton">
+                    <property name="text">
+                     <string notr="true">拓扑排序</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="othePage">
+              <attribute name="title">
+               <string>其它操作</string>
+              </attribute>
+              <layout class="QFormLayout" name="formLayout_7">
+               <item row="0" column="0">
+                <widget class="QWidget" name="searchUnitFreeInfoWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_16">
+                  <item row="0" column="0">
+                   <layout class="QFormLayout" name="searchUnitFreeFormLayout">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="searchUnitFreeInfoLabel">
+                      <property name="text">
+                       <string notr="true">查询某单元的空闲情况，其标号为</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="unitFreeInfoIndexSpinBox">
+                      <property name="readOnly">
+                       <bool>false</bool>
+                      </property>
+                      <property name="prefix">
+                       <string notr="true"/>
+                      </property>
+                      <property name="minimum">
+                       <number>0</number>
+                      </property>
+                      <property name="maximum">
+                       <number>104857600</number>
+                      </property>
+                      <property name="value">
+                       <number>0</number>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="locateUnitFreeInfoPushButton">
+                    <property name="text">
+                     <string notr="true">定位</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="partitionOptionsWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_17">
+                  <item row="0" column="0">
+                   <widget class="QPushButton" name="clearPartitionPushButton">
+                    <property name="text">
+                     <string notr="true">清空分区所有数据</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="writePartitionToFilePushButton">
+                    <property name="text">
+                     <string notr="true">写入分区所有数据到数据文件</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </widget>
            </item>

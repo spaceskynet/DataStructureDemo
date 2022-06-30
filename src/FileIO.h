@@ -1,7 +1,7 @@
 ﻿/**
  * @file FileIO.h
  * @author SpaceSkyNet (spaceskynet@outlook.com)
- * @brief 对数据文件的读写操作，以及对文件中模拟内存在实际内存中结构的重建
+ * @brief 对数据文件的读写操作，模拟内存的分配与回收，以及对文件中模拟内存在实际内存中结构的重建
  * @version 0.1
  * @date 2022-06-20
  * 
@@ -17,8 +17,8 @@
 #include <utility>
 #include <vector>
 #define F_OK 0
-#define DATA_FILE_PATH "./mem.dat"
-#define DATA_FILE_HEADER "BIT\xAC"
+#define DAT_FILE_PATH "./mem.dat"
+#define DAT_MAGIC_NUMBER "BIT\xAC"
 #define DEFAULT_UNIT_SIZE 4 // 自定义分区划分的单元的默认大小，单位为字节
 #define MEM_ALLOC_ALG FF // 内存分配算法类型选择
 #define Q_FRINTF_BUFFER_SIZE 1000
@@ -43,17 +43,28 @@ enum MEMORY_ALLOCATION_ALGORITHM { FF, BF, WF };
  * 存储在分区信息区，同时是分区块是否空闲的标志
  * (增加新的数据结构需要在这里增加新标志)
  */
-enum DS_CLASS { NOT_USED, USED, LINKED_LIST };
+enum DS_CLASS { 
+	NOT_USED, 
+	USED, 
+	LINKED_LIST,
+	ARRAY,
+	STACK,
+	HEAP,
+	TREE,
+	UNDIRECTED_GRAPH,
+	DIRECTED_GRAPH,
+	// more
+};
 
 typedef pair<DS_CLASS, void*> dsPair; // 数据结构类型, 对应类型结构体对象的实际地址
 
 /**
- * @brief 文件头信息，包括块 ID 、 自定义分区划分的块的大小和内存分配算法
+ * @brief 文件头信息，包括文件署名域 、 自定义分区划分的块的大小和内存分配算法
  * 
  */
 typedef struct FILE_HEADER
 {
-	char chunk_id[4]; // 块 ID
+	char magic_number[4]; // 文件署名域
 	unsigned int unit_size; // 自定义分区划分单元的大小
 	MEMORY_ALLOCATION_ALGORITHM alg; // 内存分配算法类型选择
 	FILE_HEADER() { setDefault(true); }
@@ -93,6 +104,7 @@ typedef struct BLOCK_LINKED_LIST
 	block tailInsert(block, block);
 	void traverseList(FILE*, size_t(*write)(const void*, size_t, size_t, FILE*));
 	block locateElem(unsigned int);
+	int locateElemIndex(unsigned int);
 	void print(block);
 	void printAll();
 }* plist;
@@ -169,6 +181,7 @@ public:
 	// 分区信息查询修改相关
 	void printBasicInfo();
 	void printBlockInfo(unsigned int);
+	int getBlockIndex(unsigned int);
 	void printBlockInfoAll();
 	unsigned int getUnitSize();
 	void changeUnitSize(unsigned int);
@@ -195,6 +208,7 @@ public:
 	void setMainWindow(Ui::MainWindow*);
 	void updateBlockFreeInfoMainWindow();
 	void sendOutput(char*);
+	void sendOutput(QString);
 };
 
 void* newMalloc(PartitionIO*, DS_CLASS, size_t); // 自实现内存分配函数
