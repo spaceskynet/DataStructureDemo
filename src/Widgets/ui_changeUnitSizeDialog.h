@@ -35,6 +35,9 @@ public:
         if (this->objectName().isEmpty())
             this->setObjectName(QString::fromUtf8("changeUnitSizeDialog"));
         this->resize(366, 74);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/icon/icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        this->setWindowIcon(icon);
         gridLayout = new QGridLayout(this);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         unitSizeFormLayout = new QFormLayout();

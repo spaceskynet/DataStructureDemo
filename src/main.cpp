@@ -1,8 +1,14 @@
-﻿#include "utils.h"
+﻿/**
+ * @file main.cpp
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief 程序入口点
+ * @version 0.1
+ * @date 2022-06-24
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "gui.h"
-#include <iostream>
-
-using namespace std;
 
 int main(int argc, char* argv[])
 {

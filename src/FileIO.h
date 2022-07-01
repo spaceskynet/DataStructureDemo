@@ -16,12 +16,11 @@
 #include <cstdarg>
 #include <utility>
 #include <vector>
-#define F_OK 0
-#define DAT_FILE_PATH "./mem.dat"
-#define DAT_MAGIC_NUMBER "BIT\xAC"
+#define DAT_FILE_PATH "./mem.dat" // 数据文件保存路径
+#define DAT_MAGIC_NUMBER "BIT\xAC" // 数据文件署名域
 #define DEFAULT_UNIT_SIZE 4 // 自定义分区划分的单元的默认大小，单位为字节
 #define MEM_ALLOC_ALG FF // 内存分配算法类型选择
-#define Q_FRINTF_BUFFER_SIZE 1000
+#define Q_FRINTF_BUFFER_SIZE 1000 // 输出到 UI 界面的缓冲区大小
 
 const unsigned int PARTITION_TOTAL_SIZE = 100 * 1024 * 1024; // 自定义分区 100 M
 const unsigned int INF = ~0U;
@@ -53,13 +52,13 @@ enum DS_CLASS {
 	TREE,
 	UNDIRECTED_GRAPH,
 	DIRECTED_GRAPH,
-	// more
+	// more data structure
 };
 
 typedef pair<DS_CLASS, void*> dsPair; // 数据结构类型, 对应类型结构体对象的实际地址
 
 /**
- * @brief 文件头信息，包括文件署名域 、 自定义分区划分的块的大小和内存分配算法
+ * @brief 文件头信息，包括文件署名域、 自定义分区划分的块的大小和内存分配算法
  * 
  */
 typedef struct FILE_HEADER
@@ -166,10 +165,10 @@ public:
 	PartitionIO();
 	~PartitionIO();
 
-	//初始化结构
+	// 初始化（清空）结构
 	void clear();
 
-	//数据文件的读写操作
+	// 数据文件的读写操作
 	void readFile();
 	void writeFile();
 	
@@ -181,6 +180,7 @@ public:
 	// 分区信息查询修改相关
 	void printBasicInfo();
 	void printBlockInfo(unsigned int);
+	void printPartitionAddress();
 	int getBlockIndex(unsigned int);
 	void printBlockInfoAll();
 	unsigned int getUnitSize();
@@ -205,6 +205,7 @@ public:
 	signed_size_t calcOffset();
 	block findBlock(unsigned int);
 
+	// UI 操作相关
 	void setMainWindow(Ui::MainWindow*);
 	void updateBlockFreeInfoMainWindow();
 	void sendOutput(char*);
@@ -213,6 +214,6 @@ public:
 
 void* newMalloc(PartitionIO*, DS_CLASS, size_t); // 自实现内存分配函数
 void newFree(PartitionIO*, void*); // 自实现内存回收函数
-QListWidgetItem* newBlock(char*, DS_CLASS);
-int _qprintf(PartitionIO*, const char*, ...);
+QListWidgetItem* newBlock(char*, DS_CLASS); // UI 界面分区空闲情况新 Block 创建
+int _qprintf(PartitionIO*, const char*, ...); // 重定向输出到 UI 界面的输出窗口
 int qprintf(PartitionIO*, const char*, va_list);

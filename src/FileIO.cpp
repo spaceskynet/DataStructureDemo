@@ -13,6 +13,10 @@
 #include <assert.h>
 #include <QFileInfo>
 
+/**
+ * @brief 数据结构中文名称
+ * 
+ */
 const char* DS_CLASS_STR[] = { 
 	"空闲", 
 	"已使用", 
@@ -23,19 +27,24 @@ const char* DS_CLASS_STR[] = {
 	"树",
 	"无向图",
 	"有向图",
-	// more
+	// more data structure
 };
+
+/**
+ * @brief 分区空闲情况 UI 显示颜色
+ * 
+ */
 const QColor DS_COLORS[] = {
-	QColor(0, 255, 0, 255), // Green
-	QColor(255, 0, 0, 255), // Red
+	QColor(0, 255, 0, 255), // 空闲，Green
+	QColor(255, 0, 0, 255), // 已使用，Red
 	QColor(255, 138, 217),	// 链表
 	QColor(152, 255, 237),	// 数组
 	QColor(183, 185, 255),	// 栈
 	QColor(220, 255, 108),	// 堆
-	QColor(255, 81, 94), // 树
+	QColor(255, 81, 94),	// 树
 	QColor(255, 168, 117),	// 无向图
 	QColor(255, 240, 53),	// 有向图
-	// more					
+	// more data structure					
 };
 
 PartitionIO::PartitionIO()
@@ -84,6 +93,7 @@ void PartitionIO::readFile()
 		perror("Dat file magic number error!");
 		exit(-1);
 	}
+	// 如果单元大小非法，则重置，并清空分区
 	if (head->unit_size <= 0 || head->unit_size > PARTITION_TOTAL_SIZE)
 	{
 		head->unit_size = DEFAULT_UNIT_SIZE;
@@ -121,6 +131,10 @@ void PartitionIO::readFile()
 	fread(partition, PARTITION_TOTAL_SIZE, 1, fp);
 }
 
+/**
+ * @brief 将分区信息写入数据文件
+ * 
+ */
 void PartitionIO::writeFile()
 {
 	FILE* fp = fopen(DAT_FILE_PATH, "wb");
@@ -196,6 +210,11 @@ void PartitionIO::printBlockInfo(unsigned int pos)
 	block elem = block_info->locateElem(pos);
 	if (elem != nullptr) block_info->print(elem);
 	else printf("Illegal pos!\n");
+}
+
+void PartitionIO::printPartitionAddress()
+{
+	_qprintf(this, "本次分区首地址为：0x%p\n", partition);
 }
 
 int PartitionIO::getBlockIndex(unsigned int pos)
@@ -368,6 +387,10 @@ void PartitionIO::setMainWindow(Ui::MainWindow* mainWindow)
 	this->mainWindow = mainWindow;
 }
 
+/**
+ * @brief 更新 UI 界面空闲块信息
+ * 
+ */
 void PartitionIO::updateBlockFreeInfoMainWindow()
 {
 	// 更新空闲单元块列表
@@ -387,7 +410,11 @@ void PartitionIO::updateBlockFreeInfoMainWindow()
 	mainWindow->freeUnitSumSpinBox->setValue(free_unit_sum);
 }
 
-
+/**
+ * @brief 重定向输出到 UI 界面的输出窗口
+ * 
+ * @param output 
+ */
 void PartitionIO::sendOutput(char* output)
 {
 	this->sendOutput(QString::fromUtf8(output));
@@ -523,7 +550,13 @@ void newFree(PartitionIO* part, void* ptr)
 
 	part->updateBlockFreeInfoMainWindow();
 }
-
+/**
+ * @brief UI 界面分区空闲情况新 Block 创建
+ * 
+ * @param addr_range 块所包含的单元的范围，左闭右开
+ * @param type 
+ * @return QListWidgetItem* 
+ */
 QListWidgetItem* newBlock(char* addr_range, DS_CLASS type)
 {
 	QBrush COLOR(DS_COLORS[type]);
@@ -540,6 +573,14 @@ QListWidgetItem* newBlock(char* addr_range, DS_CLASS type)
 	return __qlistwidgetitem;
 }
 
+/**
+ * @brief 重新实现 printf，使得输出重定向到 UI 界面的输出窗口
+ * 
+ * @param part 
+ * @param format 
+ * @param ... 
+ * @return int 
+ */
 int _qprintf(PartitionIO* part, const char* format, ...)
 {
 	va_list aptr;

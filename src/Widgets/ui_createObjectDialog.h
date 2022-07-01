@@ -32,6 +32,9 @@ public:
             this->setObjectName(QString::fromUtf8("createObjectDialog"));
         this->resize(194, 72);
         this->setWindowTitle(QString::fromUtf8("\346\226\260\345\273\272\345\257\271\350\261\241"));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/icon/icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        this->setWindowIcon(icon);
         horizontalLayout = new QHBoxLayout(this);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         loadDefaultCheckBox = new QCheckBox(this);

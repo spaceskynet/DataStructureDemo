@@ -18,10 +18,8 @@
 #include "DataStructure/UndiG.h"
 #include "DataStructure/DiG.h"
 #include <string>
-#include <memory>
 
 using std::string;
-
 
  /**
  * @brief 各种数据结构的集合
@@ -39,7 +37,7 @@ public:
 	vector<myTree*> my_tree; // 树
 	vector<undirectionGraph*> undirection_graph; // 无向图
 	vector<directionGraph*> direction_graph; // 有向图
-	// more
+	// more data structure
 
 public:
 	Collection();

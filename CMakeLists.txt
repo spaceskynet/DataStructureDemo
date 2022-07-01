@@ -24,7 +24,9 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 qt_standard_project_setup()
 
 # 将源代码添加到此项目的可执行文件。
-add_executable (DataStructureDemo WIN32
+qt_add_executable (DataStructureDemo WIN32
+	"src/res/res.rc"
+	"src/res/res.qrc"
 	"src/FileIO.cpp"
 	"src/DataStructure/LinkedList.cpp"
 	"src/DataStructure/Array.cpp"
@@ -39,6 +41,7 @@ add_executable (DataStructureDemo WIN32
 	"src/Widgets/ui_changeUnitSizeDialog.h"
 	"src/Widgets/ui_createObjectDialog.h"
 	"src/Widgets/ui_inputDialog.h"
+	"src/Widgets/ui_about.h"
 	"src/gui.cpp"
 	"src/main.cpp"
  )

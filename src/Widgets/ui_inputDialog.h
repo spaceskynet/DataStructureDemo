@@ -36,6 +36,9 @@ public:
             this->setObjectName(QString::fromUtf8("inputDialog"));
         this->resize(311, 72);
         this->setWindowTitle(QString::fromUtf8("\350\276\223\345\205\245"));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/icon/icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        this->setWindowIcon(icon);
         horizontalLayout = new QHBoxLayout(this);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         inputVerticalLayout = new QVBoxLayout();

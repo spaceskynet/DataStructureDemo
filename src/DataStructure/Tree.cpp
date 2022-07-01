@@ -1,4 +1,14 @@
-﻿#include "Tree.h"
+﻿/**
+ * @file Tree.cpp
+ * @author Louis0612 SpaceSkyNet
+ * @brief 树的实现
+ * @version 0.1
+ * @date 2022-06-30
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+#include "Tree.h"
 
 PartitionIO* myTree::part = nullptr;
 void* myTree::_malloc(size_t Size)

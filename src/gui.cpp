@@ -1,4 +1,14 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+﻿/**
+ * @file gui.cpp
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief UI 界面相关的实现
+ * @version 0.1
+ * @date 2022-06-27
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+#define _CRT_SECURE_NO_WARNINGS
 #include "gui.h"
 #include <QObject>
 
@@ -22,6 +32,10 @@ MainWindow::~MainWindow()
 {
 }
 
+/**
+ * @brief 初始化 UI 界面并绑定按钮
+ * 
+ */
 void MainWindow::setup()
 {
     // 单元大小与单元总数，绑定相关信号与槽
@@ -60,6 +74,13 @@ void MainWindow::setup()
         part->sendOutput(QString::fromUtf8("已将分区所有数据写入到数据文件!\n"));
         });
 
+    // 绑定 Logo 和 关于界面
+    QObject::connect(ui->logoLabel, &QClickedLabel::clicked, this, [this]() {
+        Ui::About dialog;
+        QObject::connect(dialog.pushButton, &QPushButton::clicked, &dialog, &QDialog::close);
+        dialog.exec();
+    });
+
     // 绑定数据结构操作与 UI 界面按钮
     bindLinkedListButton();
     bindArrayButton();
@@ -71,8 +92,13 @@ void MainWindow::setup()
 
     // 更新 UI 界面信息
     update();
+    part->printPartitionAddress();
 }
 
+/**
+ * @brief 更新 UI 界面信息
+ * 
+ */
 void MainWindow::update()
 {
     // 根据分区信息更新分区空闲块界面信息
@@ -87,7 +113,9 @@ void MainWindow::update()
     ui->undirectionGraphCountSpinBox->setValue(data_structures->undirection_graph.size());
     ui->directionGraphCountSpinBox->setValue(data_structures->direction_graph.size());
 
-    // more
+    // more data structure
+
+    _qprintf(part, "UI 界面更新完毕\n");
 }
 
 void MainWindow::bindLinkedListButton()
@@ -1019,7 +1047,7 @@ void MainWindow::bindDirectionGraphButton()
         }
         delete[] buffer;
         });
-
+    
     // 增加顶点数
     QObject::connect(ui->directionGraphAddVertexPushButton, &QPushButton::clicked, this, [this]() {
         char* buffer = new char[Q_FRINTF_BUFFER_SIZE];
@@ -1116,6 +1144,10 @@ void MainWindow::bindDirectionGraphButton()
         });
 }
 
+/**
+ * @brief 清空分区
+ * 
+ */
 void MainWindow::clearPartition()
 {
     part->clear();
@@ -1125,6 +1157,10 @@ void MainWindow::clearPartition()
     _qprintf(part, "分区所有数据清空完毕\n");
 }
 
+/**
+ * @brief 定位单元所在块
+ * 
+ */
 void MainWindow::locateBlock()
 {
     int unit_index = ui->unitFreeInfoIndexSpinBox->value();
@@ -1132,9 +1168,15 @@ void MainWindow::locateBlock()
     if (~block_index) {
         ui->blockFreeInfoListWidget->setFocus();
         ui->blockFreeInfoListWidget->setCurrentRow(block_index);
+        ui->blockFreeInfoListWidget->scrollToItem(ui->blockFreeInfoListWidget->item(block_index));
     }
 }
 
+/**
+ * @brief 修改单元总数
+ * 
+ * @param unit_size 
+ */
 void MainWindow::changeUnitSum(int unit_size)
 {
     int unit_sum = PARTITION_TOTAL_SIZE / unit_size;
@@ -1142,6 +1184,10 @@ void MainWindow::changeUnitSum(int unit_size)
     ui->unitFreeInfoIndexSpinBox->setMaximum(unit_sum);
 }
 
+/**
+ * @brief 修改单元大小
+ * 
+ */
 void MainWindow::changeUnitSize()
 {
     unsigned int unit_size = changeUnitSizeDialog->unitSizeSpinBox->value();
@@ -1160,9 +1206,18 @@ void MainWindow::changeUnitSize()
     _qprintf(part, "重设单元大小完毕\n");
 }
 
+/**
+ * @brief 自定义消息窗口
+ * 
+ * @param content 
+ * @return int 
+ */
 int customWarning(QString content)
 {
     QMessageBox msg_box(QMessageBox::Warning, QString::fromUtf8("警告"), content, QMessageBox::Yes | QMessageBox::No);
+    QIcon icon;
+    icon.addFile(QString::fromUtf8(":/icon/icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+    msg_box.setWindowIcon(icon);
     return msg_box.exec();
 }
 int customWarning(const char* content)
@@ -1172,6 +1227,9 @@ int customWarning(const char* content)
 int customQuestion(QString content)
 {
     QMessageBox msg_box(QMessageBox::Question, QString::fromUtf8("询问"), content, QMessageBox::Yes | QMessageBox::No);
+    QIcon icon;
+    icon.addFile(QString::fromUtf8(":/icon/icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+    msg_box.setWindowIcon(icon);
     return msg_box.exec();
 }
 int customQuestion(const char* content)

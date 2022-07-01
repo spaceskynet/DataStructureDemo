@@ -2,6 +2,7 @@
 
 .vs/
 .vscode/
+.VSCodeCounter/
 x64/
 out/
 doc/

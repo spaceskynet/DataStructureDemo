@@ -1,3 +1,13 @@
+/**
+ * @file newWidgets.hpp
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief 自实现的提升类
+ * @version 0.1
+ * @date 2022-06-27
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #pragma once
 #include <QLabel>
 #include <QMouseEvent>

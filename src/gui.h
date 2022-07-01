@@ -1,8 +1,19 @@
-﻿#pragma once
+﻿/**
+ * @file gui.h
+ * @author SpaceSkyNet (spaceskynet@outlook.com)
+ * @brief UI 界面相关的声明
+ * @version 0.1
+ * @date 2022-06-27
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+#pragma once
 #include "utils.h"
 #include "Widgets/ui_changeUnitSizeDialog.h"
 #include "Widgets/ui_createObjectDialog.h"
 #include "Widgets/ui_inputDialog.h"
+#include "Widgets/ui_about.h"
 #include <memory>
 
 class PartitionIO;
@@ -11,6 +22,10 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+/**
+ * @brief 主窗口类
+ * 
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

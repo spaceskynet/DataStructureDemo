@@ -22,7 +22,7 @@ Collection::Collection()
     myTree::part = part;
     undirectionGraph::part = part;
     directionGraph::part = part;
-    // more
+    // more data structure
 
     part->readFile();
     rebuild();
@@ -114,6 +114,12 @@ void Collection::singleRebuild(DS_CLASS type, void* real_addr, signed_size_t off
     // more data structure
 }
 
+/**
+ * @brief 初始化特定的数据结构
+ * 
+ * @param type 
+ * @param use_default 是否使用默认的测试数据初始化
+ */
 void Collection::init(DS_CLASS type, bool use_default)
 {
     if(type == LINKED_LIST)
@@ -195,6 +201,12 @@ void Collection::init(DS_CLASS type, bool use_default)
     // more data structure
 }
 
+/**
+ * @brief 销毁特定的数据结构
+ * 
+ * @param type 
+ * @param index 数据结构对象的索引
+ */
 void Collection::del(DS_CLASS type, int index)
 {
     if (type == LINKED_LIST)
@@ -277,6 +289,10 @@ void Collection::del(DS_CLASS type, int index)
     // more data structure
 }
 
+/**
+ * @brief 清空所有数据结构对象的指针
+ * 
+ */
 void Collection::clearAll()
 {
     linked_list.clear();
@@ -287,7 +303,7 @@ void Collection::clearAll()
     undirection_graph.clear();
     direction_graph.clear();
 
-    // more
+    // more data structure
 }
 
 void Collection::printBasicInfo()

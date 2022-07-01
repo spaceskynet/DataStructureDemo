@@ -1,4 +1,14 @@
-﻿#pragma once
+﻿/**
+ * @file UndiG.h
+ * @author believable
+ * @brief 无向图的声明
+ * @version 0.1
+ * @date 2022-06-30
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+#pragma once
 #include "../FileIO.h"
 #include <cstdio>
 #include <cstdlib>

@@ -1,15 +1,16 @@
 /********************************************************************************
-** Form generated from reading UI file 'MainWindowtFhsbm.ui'
+** Form generated from reading UI file 'MainWindowUlrDeO.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.3.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef MAINWINDOWTFHSBM_H
-#define MAINWINDOWTFHSBM_H
+#ifndef MAINWINDOWULRDEO_H
+#define MAINWINDOWULRDEO_H
 
 #include <QtCore/QVariant>
+#include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFormLayout>
@@ -250,6 +251,9 @@ public:
         MainWindow->resize(750, 600);
         MainWindow->setMinimumSize(QSize(750, 600));
         MainWindow->setWindowTitle(QString::fromUtf8("Data Structure Demo"));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/icon/icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        MainWindow->setWindowIcon(icon);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         gridLayout = new QGridLayout(centralwidget);
@@ -1420,4 +1424,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // MAINWINDOWTFHSBM_H
+#endif // MAINWINDOWULRDEO_H
