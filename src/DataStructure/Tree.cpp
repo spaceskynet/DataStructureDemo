@@ -268,8 +268,8 @@ TreeNode myTree::deletenode(int pos)
     {
         ret = mnode->data;
         recursive_Delete(mnode); //利用递归删除子节点
+        MY_printf("已删除节点%c\n", ret);
     }
-    MY_printf("已删除节点%c\n", ret);
     return ret;
 }
 TreeNode myTree::get(int Pos)

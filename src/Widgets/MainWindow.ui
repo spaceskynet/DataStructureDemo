@@ -189,7 +189,7 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="operateVerticalLayout">
+       <layout class="QVBoxLayout" name="operateVerticalLayout" stretch="1,2">
         <item>
          <widget class="QGroupBox" name="dataStructureOperateGroupBox">
           <property name="title">
@@ -1277,6 +1277,13 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
                <item row="1" column="0">
                 <widget class="QWidget" name="partitionOptionsWidget" native="true">
                  <layout class="QGridLayout" name="gridLayout_17">
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="writePartitionToFilePushButton">
+                    <property name="text">
+                     <string notr="true">写入分区所有数据到数据文件</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="0" column="0">
                    <widget class="QPushButton" name="clearPartitionPushButton">
                     <property name="text">
@@ -1284,10 +1291,10 @@ span {font-family:'monospace'; font-size:10pt; color:#000000;}
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="writePartitionToFilePushButton">
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="clearOutputInfoPushButton">
                     <property name="text">
-                     <string notr="true">写入分区所有数据到数据文件</string>
+                     <string notr="true">清空输出信息</string>
                     </property>
                    </widget>
                   </item>

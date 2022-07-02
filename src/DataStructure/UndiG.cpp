@@ -1,6 +1,6 @@
 ﻿/**
  * @file UndiG.cpp
- * @author believable
+ * @author believable SpaceSkyNet
  * @brief 无向图的实现
  * @version 0.1
  * @date 2022-06-30
@@ -73,6 +73,18 @@ void undirectionGraph::add_edge(int start, int end, double value)
         MYprintf("The maximum supported number of edge is 100.\n");
         return;
     }
+    if (start >= vertexNum) {
+        MYprintf("Illegal start %d. Please use existing vertices only.\n", start);
+        return;
+    }
+    if (end >= vertexNum) {
+        MYprintf("Illegal end %d. Please use existing vertices only.\n", end);
+        return;
+    }
+    if (start == end) {
+        MYprintf("Don't support loop.\n");
+        return;
+    }
     startinput[edgeNum] = start;
     endinput[edgeNum] = end;
     weightinput[edgeNum++] = value;
@@ -97,6 +109,7 @@ void undirectionGraph::reassign_weight(int start, int end, double value)
     if (!found)
     {
         MYprintf("You can not reassign to edges that does not exist.\n");
+        return;
     }
     MYprintf("Reset edge weight (start:%d end:%d weight:%f) in the graph!\n", start, end, value);
 }
@@ -178,6 +191,10 @@ void undirectionGraph::DFS(int inode)
     //     MYprintf("Please make the graph ready first!\n");
     //     return;
     // }
+    if (inode >= vertexNum) {
+        MYprintf("Illegal node %d\n", inode);
+        return;
+    }
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -232,6 +249,10 @@ void undirectionGraph::BFS(int inode)
     //     MYprintf("Please make the graph ready first!\n");
     //     return;
     // }
+    if (inode >= vertexNum) {
+        MYprintf("Illegal node %d\n", inode);
+        return;
+    }
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -289,6 +310,10 @@ void undirectionGraph::dijkstra(int inode)
     //     MYprintf("Please make the graph ready first!\n");
     //     return;
     // }
+    if (inode >= vertexNum) {
+        MYprintf("Illegal node %d\n", inode);
+        return;
+    }
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -374,6 +399,7 @@ void undirectionGraph::dijkstra(int inode)
 
 void undirectionGraph::floyd()
 {
+    if (isempty()) return;
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -453,6 +479,7 @@ void undirectionGraph::prim()
     //     MYprintf("Please make the graph ready first!\n");
     //     return;
     // }
+    if (isempty()) return;
     if (!isready)
         getready();
     double *lowcost = distance;
@@ -519,6 +546,7 @@ void undirectionGraph::kruskal()
     //     MYprintf("Please make the graph ready first!\n");
     //     return;
     // }
+    if (isempty()) return;
     if (!isready)
         getready();
     int *head = branch;
@@ -720,7 +748,7 @@ void undirectionGraph::load_default()
     double value[] = {1, 2, 3, 5, 3, 2, 1, 6, 0.2, 0.1, 1};
     init_graph(vexnum, edgenum, &start[0], &end[0], &value[0]);
     add_edge(6, 5, 3);
-    add_vertex(3);
+    add_vertex(2);
     add_edge(10, 11, 2);
     add_edge(9, 10, 1);
     add_edge(10, 7, 0.1);

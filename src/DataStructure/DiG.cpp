@@ -43,7 +43,7 @@ void directionGraph::init_graph(int vertexnum_, int edgenum_, int *start, int *e
     if (vertexNum == 0)
         MYprintf("Successfully initilize an empty directed graph!\n");
     else
-        MYprintf("Successfully initilize an directed graph! Vertex number = %d, edge number = %d\n", vertexnum_, edgenum_);
+        MYprintf("Successfully initilize a directed graph! Vertex number = %d, edge number = %d\n", vertexnum_, edgenum_);
 }
 
 void directionGraph::add_vertex(int num_)
@@ -70,6 +70,18 @@ void directionGraph::add_edge(int start, int end, double value)
         MYprintf("The maximum supported number of edge is 100.\n");
         return;
     }
+    if (start >= vertexNum) {
+        MYprintf("Illegal start %d. Please use existing vertices only.\n", start);
+        return;
+    }
+    if (end >= vertexNum) {
+        MYprintf("Illegal end %d. Please use existing vertices only.\n", end);
+        return;
+    }
+    if (start == end) {
+        MYprintf("Don't support loop.\n");
+        return;
+    }
     startinput[edgeNum] = start;
     endinput[edgeNum] = end;
     weightinput[edgeNum++] = value;
@@ -92,6 +104,7 @@ void directionGraph::reassign_weight(int start, int end, double value)
     if (!found)
     {
         MYprintf("You can not reassign to edges that does not exist.\n");
+        return;
     }
     MYprintf("Reset edge weight (start:%d end:%d weight:%f) in the graph!\n", start, end, value);
 }
@@ -171,6 +184,10 @@ void directionGraph::getready()
 
 void directionGraph::DFS(int inode)
 {
+    if (inode >= vertexNum) {
+        MYprintf("Illegal node %d\n", inode);
+        return;
+    }
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -213,6 +230,10 @@ void directionGraph::subDFS(int inode)
 
 void directionGraph::BFS(int inode)
 {
+    if (inode >= vertexNum) {
+        MYprintf("Illegal node %d\n", inode);
+        return;
+    }
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -267,6 +288,10 @@ void directionGraph::subBFS()
 
 void directionGraph::dijkstra(int inode)
 {
+    if (inode >= vertexNum) {
+        MYprintf("Illegal node %d\n", inode);
+        return;
+    }
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -352,6 +377,7 @@ void directionGraph::dijkstra(int inode)
 
 void directionGraph::floyd()
 {
+    if (isempty()) return;
     if (!isready)
         getready();
     for (int i = 0; i < vertexNum; i++)
@@ -428,6 +454,7 @@ void directionGraph::findpath(int inode, int jnode)
 
 void directionGraph::toposort()
 {
+    if (isempty()) return;
     if (!isready)
         getready();
     int *in_deg = branch;
@@ -587,7 +614,7 @@ void directionGraph::load_default()
     double value[] = {1, 2, 3, 5, 3, 2, 1, 6, 0.2, 0.1, 1};
     init_graph(vexnum, edgenum, &start[0], &end[0], &value[0]);
     add_edge(6, 5, 3);
-    add_vertex(3);
+    add_vertex(2);
     add_edge(10, 11, 2);
     add_edge(9, 10, 1);
     add_edge(10, 7, 0.1);

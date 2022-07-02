@@ -89,10 +89,9 @@ struct myStack
     static int _printf(const char *, ...);
 
     void recovery(signed_size_t); //将原数据结构中所有指针变量加上 offset
-    template <typename T>
-    void addOffset(T &var, signed_size_t offset)
-    {
-        var = (T)((char *)var + offset);
+    template<typename T>void addOffset(T& var, signed_size_t offset) {
+        if (var == nullptr) return;
+        var = (T)((char*)var + offset);
     }
 };
 #endif MYSTACK_H_

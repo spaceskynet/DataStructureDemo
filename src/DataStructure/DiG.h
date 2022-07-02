@@ -1,6 +1,6 @@
 /**
  * @file DiG.h
- * @author believable
+ * @author believable SpaceSkyNet
  * @brief 有向图的声明
  * @version 0.1
  * @date 2022-06-30
@@ -44,7 +44,15 @@ class directionGraph
     int countR;    
 
     void init_graph(int vertexnum_ = 0, int edgenum_ = 0, int* start = nullptr, int* end = nullptr, double* weight_ = nullptr);
-    void isempty()
+    bool isempty()
+    {
+        if (vertexNum == 0) {
+            MYprintf("The graph is empty!\n");
+            return true;
+        }
+        return false;
+    };
+    void display()
     {
         if (vertexNum == 0) MYprintf("The graph is empty!\n");
         else displayinfo();
@@ -69,6 +77,7 @@ class directionGraph
 
     void recovery(signed_size_t); //将原数据结构中所有指针变量加上 offset
     template<typename T>void addOffset(T& var, signed_size_t offset) {
+        if (var == nullptr) return;
         var = (T)((char*)var + offset);
     }
 

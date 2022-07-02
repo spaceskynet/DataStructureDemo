@@ -1,13 +1,13 @@
-/********************************************************************************
-** Form generated from reading UI file 'MainWindowUlrDeO.ui'
+﻿/********************************************************************************
+** Form generated from reading UI file 'MainWindowyrfcjZ.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.3.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef MAINWINDOWULRDEO_H
-#define MAINWINDOWULRDEO_H
+#ifndef MAINWINDOWYRFCJZ_H
+#define MAINWINDOWYRFCJZ_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
@@ -238,8 +238,9 @@ public:
     QPushButton *locateUnitFreeInfoPushButton;
     QWidget *partitionOptionsWidget;
     QGridLayout *gridLayout_17;
-    QPushButton *clearPartitionPushButton;
     QPushButton *writePartitionToFilePushButton;
+    QPushButton *clearPartitionPushButton;
+    QPushButton *clearOutputInfoPushButton;
     QGroupBox *outputInfoGroupBox;
     QVBoxLayout *verticalLayout_3;
     QTextEdit *outputInfoTextEdit;
@@ -1345,17 +1346,23 @@ public:
         partitionOptionsWidget->setObjectName(QString::fromUtf8("partitionOptionsWidget"));
         gridLayout_17 = new QGridLayout(partitionOptionsWidget);
         gridLayout_17->setObjectName(QString::fromUtf8("gridLayout_17"));
+        writePartitionToFilePushButton = new QPushButton(partitionOptionsWidget);
+        writePartitionToFilePushButton->setObjectName(QString::fromUtf8("writePartitionToFilePushButton"));
+        writePartitionToFilePushButton->setText(QString::fromUtf8("\345\206\231\345\205\245\345\210\206\345\214\272\346\211\200\346\234\211\346\225\260\346\215\256\345\210\260\346\225\260\346\215\256\346\226\207\344\273\266"));
+
+        gridLayout_17->addWidget(writePartitionToFilePushButton, 0, 1, 1, 1);
+
         clearPartitionPushButton = new QPushButton(partitionOptionsWidget);
         clearPartitionPushButton->setObjectName(QString::fromUtf8("clearPartitionPushButton"));
         clearPartitionPushButton->setText(QString::fromUtf8("\346\270\205\347\251\272\345\210\206\345\214\272\346\211\200\346\234\211\346\225\260\346\215\256"));
 
         gridLayout_17->addWidget(clearPartitionPushButton, 0, 0, 1, 1);
 
-        writePartitionToFilePushButton = new QPushButton(partitionOptionsWidget);
-        writePartitionToFilePushButton->setObjectName(QString::fromUtf8("writePartitionToFilePushButton"));
-        writePartitionToFilePushButton->setText(QString::fromUtf8("\345\206\231\345\205\245\345\210\206\345\214\272\346\211\200\346\234\211\346\225\260\346\215\256\345\210\260\346\225\260\346\215\256\346\226\207\344\273\266"));
+        clearOutputInfoPushButton = new QPushButton(partitionOptionsWidget);
+        clearOutputInfoPushButton->setObjectName(QString::fromUtf8("clearOutputInfoPushButton"));
+        clearOutputInfoPushButton->setText(QString::fromUtf8("\346\270\205\347\251\272\350\276\223\345\207\272\344\277\241\346\201\257"));
 
-        gridLayout_17->addWidget(writePartitionToFilePushButton, 0, 1, 1, 1);
+        gridLayout_17->addWidget(clearOutputInfoPushButton, 1, 0, 1, 1);
 
 
         formLayout_7->setWidget(1, QFormLayout::LabelRole, partitionOptionsWidget);
@@ -1381,6 +1388,8 @@ public:
 
         operateVerticalLayout->addWidget(outputInfoGroupBox);
 
+        operateVerticalLayout->setStretch(0, 1);
+        operateVerticalLayout->setStretch(1, 2);
 
         mainHorizontalLayout->addLayout(operateVerticalLayout);
 
@@ -1424,4 +1433,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // MAINWINDOWULRDEO_H
+#endif // MAINWINDOWYRFCJZ_H

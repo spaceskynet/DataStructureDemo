@@ -11,13 +11,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "gui.h"
 #include <QObject>
+#include <QDebug>
 
 MainWindow::MainWindow(QApplication* App, QWidget* parent)
     : QMainWindow(parent)
 {
     ui = std::unique_ptr<Ui::MainWindow>(new Ui::MainWindow);
     ui->setupUi(this);
-    changeUnitSizeDialog = std::unique_ptr<UiDialog>(new UiDialog);
 
     data_structures = std::make_unique<Collection>();
     data_structures->part->setMainWindow(ui.get());
@@ -41,14 +41,17 @@ void MainWindow::setup()
     // 单元大小与单元总数，绑定相关信号与槽
     unsigned int unit_size = part->getUnitSize();
     QObject::connect(ui->unitSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(changeUnitSum(int)));
-    QObject::connect(ui->unitSizeSpinBox, SIGNAL(valueChanged(int)), changeUnitSizeDialog->unitSizeSpinBox, SLOT(setValue(int)));
 
     ui->unitSizeSpinBox->setValue(unit_size);
     ui->unitSizeSpinBox->setMinimum(1);
 
     QObject::connect(ui->unitSizeLabel, &QClickedLabel::clicked, this, [this]() {
-        if (changeUnitSizeDialog->exec() == QDialog::Accepted) {
-            changeUnitSize();
+        auto changeUnitSizeDialog = std::unique_ptr<UiDialog>(new UiDialog);
+        changeUnitSizeDialog->unitSizeSpinBox->setValue(ui->unitSizeSpinBox->value());
+
+        if (changeUnitSizeDialog->exec() == QDialog::Accepted && 
+            changeUnitSizeDialog->unitSizeSpinBox->value() != ui->unitSizeSpinBox->value()) {
+            changeUnitSize(changeUnitSizeDialog->unitSizeSpinBox->value());
         }
     });
 
@@ -62,17 +65,26 @@ void MainWindow::setup()
     // 其它操作
     QObject::connect(ui->clearPartitionPushButton, &QPushButton::clicked, this, [this]() {
         int ret = customWarning("确定要进行操作吗？该操作会重置分区，并删除所有数据结构，操作不可逆!");
-        if (ret == QMessageBox::Yes) {
-            this->clearPartition();
-        }
+            if (ret == QMessageBox::Yes) {
+                this->clearPartition();
+            }
         });
-    QObject::connect(ui->locateUnitFreeInfoPushButton, &QPushButton::clicked, this, [this]() {
-        this->locateBlock();
+    QObject::connect(ui->clearOutputInfoPushButton, &QPushButton::clicked, this, [this]() {
+        int ret = customWarning("确定要清空下方的输出信息吗？");
+            if (ret == QMessageBox::Yes) {
+                ui->outputInfoTextEdit->clear();
+            }
         });
+    
+    QObject::connect(ui->locateUnitFreeInfoPushButton, SIGNAL(clicked()), this, SLOT(locateBlock()));
+    ui->unitFreeInfoIndexSpinBox->setKeyboardTracking(false);
+    QObject::connect(ui->unitFreeInfoIndexSpinBox, SIGNAL(valueChanged(int)), this, SLOT(locateBlock()));
+
     QObject::connect(ui->writePartitionToFilePushButton, &QPushButton::clicked, this, [this]() {
         part->writeFile();
         part->sendOutput(QString::fromUtf8("已将分区所有数据写入到数据文件!\n"));
         });
+
 
     // 绑定 Logo 和 关于界面
     QObject::connect(ui->logoLabel, &QClickedLabel::clicked, this, [this]() {
@@ -89,6 +101,7 @@ void MainWindow::setup()
     bindTreeButton();
     bindUndirectionGraphButton();
     bindDirectionGraphButton();
+    // more data structure
 
     // 更新 UI 界面信息
     update();
@@ -114,8 +127,7 @@ void MainWindow::update()
     ui->directionGraphCountSpinBox->setValue(data_structures->direction_graph.size());
 
     // more data structure
-
-    _qprintf(part, "UI 界面更新完毕\n");
+    qDebug("UI 界面更新完毕\n");
 }
 
 void MainWindow::bindLinkedListButton()
@@ -832,7 +844,7 @@ void MainWindow::bindUndirectionGraphButton()
     // 打印图信息
     QObject::connect(ui->undirectionGraphDisplayInfoPushButton, &QPushButton::clicked, this, [this]() {
         int index = ui->undirectionGraphIndexSpinBox->value();
-        data_structures->undirection_graph[index]->isempty();
+        data_structures->undirection_graph[index]->display();
         });
 
     // Prim
@@ -858,15 +870,15 @@ void MainWindow::bindUndirectionGraphButton()
         char* buffer = new char[Q_FRINTF_BUFFER_SIZE];
 
         int index = ui->undirectionGraphIndexSpinBox->value();
-        sprintf(buffer, "在索引为 %d 的无向图中更改边 <a, b> 的边权 val", index);
+        sprintf(buffer, "在索引为 %d 的无向图中更改边 <start, end> 的边权 val", index);
         Ui::inputDialog dialog;
         dialog.setWindowTitle(buffer);
-        dialog.inputLabel->setText(QString::fromUtf8("输入格式(a, b为顶点, val为浮点数)：a b val"));
+        dialog.inputLabel->setText(QString::fromUtf8("输入格式(val为浮点数)：start end val"));
         if (dialog.exec() == QDialog::Accepted) {
-            int a, b;
+            int start, end;
             double val;
-            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &a, &b, &val) == 3) {
-                data_structures->undirection_graph[index]->reassign_weight(a, b, val);
+            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &start, &end, &val) == 3) {
+                data_structures->undirection_graph[index]->reassign_weight(start, end, val);
                 this->update();
             }
         }
@@ -897,15 +909,15 @@ void MainWindow::bindUndirectionGraphButton()
         char* buffer = new char[Q_FRINTF_BUFFER_SIZE];
 
         int index = ui->undirectionGraphIndexSpinBox->value();
-        sprintf(buffer, "在索引为 %d 的无向图中增加边 <a, b>=val", index);
+        sprintf(buffer, "在索引为 %d 的无向图中增加边 <start, end>=val", index);
         Ui::inputDialog dialog;
         dialog.setWindowTitle(buffer);
-        dialog.inputLabel->setText(QString::fromUtf8("输入格式(a, b为顶点, val为浮点数)：a b val"));
+        dialog.inputLabel->setText(QString::fromUtf8("输入格式(val为浮点数)：start end val"));
         if (dialog.exec() == QDialog::Accepted) {
-            int a, b;
+            int start, end;
             double val;
-            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &a, &b, &val) == 3) {
-                data_structures->undirection_graph[index]->add_edge(a, b, val);
+            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &start, &end, &val) == 3) {
+                data_structures->undirection_graph[index]->add_edge(start, end, val);
                 this->update();
             }
         }
@@ -1013,7 +1025,7 @@ void MainWindow::bindDirectionGraphButton()
     // 打印图信息
     QObject::connect(ui->directionGraphDisplayInfoPushButton, &QPushButton::clicked, this, [this]() {
         int index = ui->directionGraphIndexSpinBox->value();
-        data_structures->direction_graph[index]->isempty();
+        data_structures->direction_graph[index]->display();
         });
 
     // TopuSort
@@ -1033,15 +1045,15 @@ void MainWindow::bindDirectionGraphButton()
         char* buffer = new char[Q_FRINTF_BUFFER_SIZE];
 
         int index = ui->directionGraphIndexSpinBox->value();
-        sprintf(buffer, "在索引为 %d 的有向图中更改边 <a, b> 的边权 val", index);
+        sprintf(buffer, "在索引为 %d 的有向图中更改边 <start, end> 的边权 val", index);
         Ui::inputDialog dialog;
         dialog.setWindowTitle(buffer);
-        dialog.inputLabel->setText(QString::fromUtf8("输入格式(a, b为顶点, val为浮点数)：a b val"));
+        dialog.inputLabel->setText(QString::fromUtf8("输入格式(val为浮点数)：start end val"));
         if (dialog.exec() == QDialog::Accepted) {
-            int a, b;
+            int start, end;
             double val;
-            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &a, &b, &val) == 3) {
-                data_structures->direction_graph[index]->reassign_weight(a, b, val);
+            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &start, &end, &val) == 3) {
+                data_structures->direction_graph[index]->reassign_weight(start, end, val);
                 this->update();
             }
         }
@@ -1072,15 +1084,15 @@ void MainWindow::bindDirectionGraphButton()
         char* buffer = new char[Q_FRINTF_BUFFER_SIZE];
 
         int index = ui->directionGraphIndexSpinBox->value();
-        sprintf(buffer, "在索引为 %d 的有向图中增加边 <a, b>=val", index);
+        sprintf(buffer, "在索引为 %d 的有向图中增加边 <start, end>=val", index);
         Ui::inputDialog dialog;
         dialog.setWindowTitle(buffer);
-        dialog.inputLabel->setText(QString::fromUtf8("输入格式(a, b为顶点, val为浮点数)：a b val"));
+        dialog.inputLabel->setText(QString::fromUtf8("输入格式(val为浮点数)：start end val"));
         if (dialog.exec() == QDialog::Accepted) {
-            int a, b;
+            int start, end;
             double val;
-            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &a, &b, &val) == 3) {
-                data_structures->direction_graph[index]->add_edge(a, b, val);
+            if (sscanf(dialog.inputLineEdit->text().toStdString().c_str(), "%d %d %lf", &start, &end, &val) == 3) {
+                data_structures->direction_graph[index]->add_edge(start, end, val);
                 this->update();
             }
         }
@@ -1188,9 +1200,8 @@ void MainWindow::changeUnitSum(int unit_size)
  * @brief 修改单元大小
  * 
  */
-void MainWindow::changeUnitSize()
+void MainWindow::changeUnitSize(int unit_size)
 {
-    unsigned int unit_size = changeUnitSizeDialog->unitSizeSpinBox->value();
     if (unit_size <= 0 || unit_size > PARTITION_TOTAL_SIZE) return;
 
     _qprintf(part, "\n重设单元大小为 %d 字节\n", unit_size);

@@ -37,8 +37,6 @@ private:
     std::unique_ptr<Collection> data_structures;
     PartitionIO* part;
 
-    std::unique_ptr<UiDialog> changeUnitSizeDialog;
-    
 public:
     MainWindow(QApplication* App, QWidget* parent = nullptr);
     ~MainWindow();
@@ -55,7 +53,7 @@ public:
 
 public slots:
     void changeUnitSum(int);
-    void changeUnitSize();
+    void changeUnitSize(int);
     void clearPartition();
     void locateBlock();
 };

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file newWidgets.hpp
  * @author SpaceSkyNet (spaceskynet@outlook.com)
  * @brief 自实现的提升类

@@ -501,6 +501,7 @@ void PartitionIO::splitBlock(block elem, unsigned int size)
  */
 void* newMalloc(PartitionIO* part, DS_CLASS type, size_t Size)
 {
+	if (Size <= 0) return nullptr;
 	unsigned int block_size = part->getUnitSize();
 	unsigned int size = (Size + block_size - 1) / block_size;
 	block elem = part->memAlloc(size);
@@ -532,6 +533,7 @@ void* newMalloc(PartitionIO* part, DS_CLASS type, size_t Size)
  */
 void newFree(PartitionIO* part, void* ptr)
 {
+	if (ptr == nullptr) return;
 	unsigned int pos = part->calcPos(ptr);
 	block elem = part->findBlock(pos);
 
