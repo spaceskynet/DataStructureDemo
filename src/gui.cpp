@@ -1202,7 +1202,7 @@ void MainWindow::changeUnitSum(int unit_size)
  */
 void MainWindow::changeUnitSize(int unit_size)
 {
-    if (unit_size <= 0 || unit_size > PARTITION_TOTAL_SIZE) return;
+    if (unit_size <= 0 || unit_size > MAX_UNIT_SIZE) return;
 
     _qprintf(part, "\n重设单元大小为 %d 字节\n", unit_size);
 

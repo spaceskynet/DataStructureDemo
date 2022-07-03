@@ -312,7 +312,7 @@ public:
         unitSizeSpinBox->setObjectName(QString::fromUtf8("unitSizeSpinBox"));
         unitSizeSpinBox->setReadOnly(true);
         unitSizeSpinBox->setMinimum(0);
-        unitSizeSpinBox->setMaximum(104857600);
+        unitSizeSpinBox->setMaximum(1024);
         unitSizeSpinBox->setSingleStep(0);
 
         unitSizeFormLayout->setWidget(0, QFormLayout::FieldRole, unitSizeSpinBox);
@@ -349,6 +349,7 @@ public:
 
         freeUnitSumSpinBox = new QSpinBox(basicInfoGroupBox);
         freeUnitSumSpinBox->setObjectName(QString::fromUtf8("freeUnitSumSpinBox"));
+        freeUnitSumSpinBox->setReadOnly(true);
         freeUnitSumSpinBox->setMaximum(104857600);
 
         freeUnitSumFormLayout->setWidget(0, QFormLayout::FieldRole, freeUnitSumSpinBox);

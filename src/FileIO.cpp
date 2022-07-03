@@ -52,7 +52,7 @@ PartitionIO::PartitionIO()
 	head = new FILE_HEADER;
 	block_info = new BLOCK_LINKED_LIST;
 	dsBlock_info = new DS_STRUCT_POS_LIST;
-	partition = (char*)malloc(PARTITION_TOTAL_SIZE);
+	partition = new char[PARTITION_TOTAL_SIZE];
 	mainWindow = nullptr;
 }
 
@@ -61,7 +61,7 @@ PartitionIO::~PartitionIO()
 	delete head;
 	delete block_info;
 	delete dsBlock_info;
-	free(partition);
+	delete[] partition;
 }
 
 /**
@@ -94,7 +94,7 @@ void PartitionIO::readFile()
 		exit(-1);
 	}
 	// 如果单元大小非法，则重置，并清空分区
-	if (head->unit_size <= 0 || head->unit_size > PARTITION_TOTAL_SIZE)
+	if (head->unit_size <= 0 || head->unit_size > MAX_UNIT_SIZE)
 	{
 		head->unit_size = DEFAULT_UNIT_SIZE;
 		clear();
@@ -230,7 +230,7 @@ void PartitionIO::printBlockInfoAll()
 
 void PartitionIO::changeUnitSize(unsigned int new_size)
 {
-	if (new_size <= 0 || new_size > PARTITION_TOTAL_SIZE) return;
+	if (new_size <= 0 || new_size > MAX_UNIT_SIZE) return;
 	head->unit_size = new_size;
 	this->clear();
 }

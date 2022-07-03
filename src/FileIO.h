@@ -19,6 +19,7 @@
 #define DAT_FILE_PATH "./mem.dat" // 数据文件保存路径
 #define DAT_MAGIC_NUMBER "BIT\xAC" // 数据文件署名域
 #define DEFAULT_UNIT_SIZE 4 // 自定义分区划分的单元的默认大小，单位为字节
+#define MAX_UNIT_SIZE 1024 // 自定义分区划分的单元的最大大小，再大了就过于浪费了，单位为字节
 #define MEM_ALLOC_ALG FF // 内存分配算法类型选择
 #define Q_FRINTF_BUFFER_SIZE 1000 // 输出到 UI 界面的缓冲区大小
 

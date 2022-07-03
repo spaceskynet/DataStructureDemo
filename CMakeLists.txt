@@ -47,5 +47,3 @@ qt_add_executable (DataStructureDemo WIN32
  )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
-
-

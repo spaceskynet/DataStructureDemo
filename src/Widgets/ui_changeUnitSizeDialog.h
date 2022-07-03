@@ -53,7 +53,7 @@ public:
         unitSizeSpinBox->setObjectName(QString::fromUtf8("unitSizeSpinBox"));
         unitSizeSpinBox->setReadOnly(false);
         unitSizeSpinBox->setMinimum(1);
-        unitSizeSpinBox->setMaximum(104857600);
+        unitSizeSpinBox->setMaximum(1024);
 
         unitSizeFormLayout->setWidget(0, QFormLayout::FieldRole, unitSizeSpinBox);
 
