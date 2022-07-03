@@ -1,4 +1,4 @@
-<img src="assets/icon.png" align="right" width="120px">
+<img src="assets/icon.webp" align="right" width="120px">
 
 # 🧱Data Structure Demo
 
@@ -12,7 +12,7 @@
 
 首次进入界面如下:
 
-![DSD_UI_comment](assets/DSD_UI_comment.png)
+![DSD_UI_comment](assets/DSD_UI_comment.webp)
 
 左侧部分为分区相关信息，单元大小可点击`Label`修改，内存的分配算法提供常见的三种内存分配算法（首次适应、最佳适应、最差适应）进行选择。分区空闲情况按照块的空闲情况采用不同颜色着色标志（空闲为绿色，已使用的块按照数据结构的不同使用不同的颜色），每项中间的文字代表这个空闲或非空闲块所包含的单元的标号范围（左闭右开），鼠标悬停在某项上可查看对应块的使用情况.
 
